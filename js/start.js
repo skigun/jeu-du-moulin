@@ -9,5 +9,6 @@ window.onload = function() {
     JDM.canvas.getContext('2d');
 
     JDM.Map.init();
+    JDM.Board.init();
     JDM.stage.update();
 };

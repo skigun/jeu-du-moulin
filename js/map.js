@@ -5,7 +5,6 @@ JDM.Map = {
     cube2: new createjs.Shape(),
     cube3: new createjs.Shape(),
     lines: new createjs.Shape(),
-    positions: [],
 
     init: function() {
         JDM.stage.addChild(this.mapContainer);
@@ -34,28 +33,16 @@ JDM.Map = {
         circle.graphics.beginFill('#000');
         circle.graphics.drawCircle(0, 0, 10);
 
-        for (var j = 0; j < 2; j++) {
-            for (var i = 0; i < 3; i++) {
-                var circle1 = circle.clone();
-                circle1.x = 50 + i * 250;
-                circle1.y = 75 + j * 500;
+        for (var j = 0; j < 3; j++) {
+            for (var i = 0; i < 9; i++) {
+                if (i != 4) {
+                    var position = JDM.Board.translatePosition({tab: j, num: i})
+                    var _circle = circle.clone();
+                    _circle.x = position.x;
+                    _circle.y = position.y;
 
-                var circle2 = circle.clone();
-                circle2.x = 125 + i * 175;
-                circle2.y = 150 + j * 350;
-
-                var circle3 = circle.clone();
-                circle3.x = 200 + i * 100;
-                circle3.y = 225 + j * 200;
-
-                var circle4 = circle.clone();
-                circle4.x = 50 + i * 75 + j * 350;
-                circle4.y = 325;
-
-                this.mapContainer.addChild(circle1);
-                this.mapContainer.addChild(circle2);
-                this.mapContainer.addChild(circle3);
-                this.mapContainer.addChild(circle4);
+                    this.mapContainer.addChild(_circle);
+                }
             }
         }
     }
