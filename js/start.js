@@ -8,6 +8,7 @@ window.onload = function() {
     JDM.canvas.height = 600;
     JDM.canvas.getContext('2d');
 
+    JDM.Menu.init();
     JDM.Map.init();
     JDM.Board.init();
     JDM.stage.update();

@@ -9,7 +9,7 @@ JDM.Map = {
     init: function() {
         JDM.stage.addChild(this.mapContainer);
 
-        this.cube0.graphics.setStrokeStyle(4).beginStroke('#f00').beginFill('#fff').drawRect(0, 0, 600, 600);
+        this.cube0.graphics.beginFill('#ffc').drawRect(0, 50, 600, 550);
         this.cube1.graphics.setStrokeStyle(3).beginStroke('#000').drawRect(50, 75, 500, 500);
         this.cube2.graphics.setStrokeStyle(3).beginStroke('#000').drawRect(125, 150, 350, 350);
         this.cube3.graphics.setStrokeStyle(3).beginStroke('#000').drawRect(200, 225, 200, 200);
@@ -36,7 +36,7 @@ JDM.Map = {
         for (var j = 0; j < 3; j++) {
             for (var i = 0; i < 9; i++) {
                 if (i != 4) {
-                    var position = JDM.Board.translatePosition({tab: j, num: i})
+                    var position = JDM.Board.translatePositionToPixel({tab: j, num: i})
                     var _circle = circle.clone();
                     _circle.x = position.x;
                     _circle.y = position.y;

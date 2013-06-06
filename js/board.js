@@ -6,10 +6,16 @@ JDM.Board = {
             this.positions[i] = [0, 0, 0, 0, null, 0, 0, 0, 0];
         }
 
-        new JDM.piece(this.translatePosition({tab: 2, num: 8}), 1);
+
     },
 
-    translatePosition: function(position) {
+    placement: function() {
+        JDM.Map.addEventListener('click', function () {
+
+        });
+    },
+
+    translatePositionToPixel: function(position) {
         if (position.num < 0 || position.num == 4 || position.num > 8 ) {
             throw new Error('Wrong position, set to ' + position.num);
         }

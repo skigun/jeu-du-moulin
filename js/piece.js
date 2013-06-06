@@ -1,5 +1,4 @@
 JDM.piece = function (position, player) {
-
     this.shape = new createjs.Shape();
 
     if (player == 1) {
@@ -9,7 +8,9 @@ JDM.piece = function (position, player) {
     }
 
     this.shape.graphics.drawCircle(position.x, position.y, 20);
-
     JDM.Map.mapContainer.addChild(this.shape);
 
+    this.shape.addEventListener('click', function(e) {
+        console.log(e.target.id);
+    });
 };
