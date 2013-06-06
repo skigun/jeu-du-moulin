@@ -3,13 +3,12 @@ body{
     padding: 0;
 }
 .core{
-    width: 800px;
+    width: 600px;
     height: 100%;
     margin-left: auto;
     margin-right: auto;
 }
 #jeu-du-moulin{
-    width: 800px;
+    width: 600px;
     height: 600px;
-    border: 1px solid black;
 }
