@@ -1,6 +1,8 @@
 JDM.piece = function (position, player) {
     this.shape = new createjs.Shape();
 
+    this.shape.graphics.setStrokeStyle(1).beginStroke("#000");
+
     if (player == 1) {
         this.shape.graphics.beginFill('#f00');
     } else {
@@ -8,9 +10,29 @@ JDM.piece = function (position, player) {
     }
 
     this.shape.graphics.drawCircle(position.x, position.y, 20);
-    JDM.Map.mapContainer.addChild(this.shape);
+
+    JDM.Board.piecesContainer.addChild(this.shape);
 
     this.shape.addEventListener('click', function(e) {
-        console.log(e.target.id);
+
     });
+
+    (function(target) {
+        target.onPress = function(e) {
+
+            var offset = {x: target.x - e.stageX, y: target.y - e.stageY};
+
+            e.onMouseMove = function(e) {
+                target.x = e.stageX + offset.x;
+                target.y = e.stageY + offset.y;
+                JDM.update = true;
+            };
+
+            e.onMouseUp = function(e) {
+                target.x = 0;
+                target.y = 0;
+                JDM.update = true;
+            };
+        };
+    })(this.shape);
 };

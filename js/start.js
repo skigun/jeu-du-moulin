@@ -2,6 +2,9 @@ window.onload = function() {
     JDM.canvas = document.getElementById('jeu-du-moulin');
     JDM.stage = new createjs.Stage(JDM.canvas);
 
+    JDM.stage.enableMouseOver(10);
+    JDM.stage.mouseMoveOutside = true;
+
     JDM.stage.snapToPixelEnabled = true;
 
     JDM.canvas.width = 600;
@@ -12,4 +15,6 @@ window.onload = function() {
     JDM.Map.init();
     JDM.Board.init();
     JDM.stage.update();
+
+    createjs.Ticker.addEventListener("tick", JDM.tick);
 };

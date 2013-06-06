@@ -1,12 +1,16 @@
 JDM.Board = {
     positions: [],
+    piecesContainer: new createjs.Container(),
 
     init: function () {
         for (var i = 0; i < 3; i++) {
             this.positions[i] = [0, 0, 0, 0, null, 0, 0, 0, 0];
         }
 
+        this.addPieces();
 
+        this.piecesContainer.y = 25;
+        JDM.stage.addChild(this.piecesContainer);
     },
 
     placement: function() {
@@ -38,5 +42,15 @@ JDM.Board = {
         }
 
         return {x: x, y: y};
+    },
+
+    addPieces: function() {
+        for(var i = 0; i < 9; i++){
+            JDM.piece({x: i*25 + 25, y: 50}, 1);
+        }
+
+        for(var i = 0; i < 9; i++){
+            JDM.piece({x: i*25 + 375, y: 50}, 2);
+        }
     }
 };
