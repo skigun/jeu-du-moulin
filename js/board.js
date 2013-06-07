@@ -1,6 +1,18 @@
 JDM.Board = {
     positions: [],
     piecesContainer: new createjs.Container(),
+    arrayTranslatePositionToPixel: [],
+
+    setPositions: function() {
+        for (var j = 0; j < 3; j++) {
+            this.arrayTranslatePositionToPixel[j] = [];
+            for (var i = 0; i < 9; i++) {
+                if (i != 4) {
+                    this.arrayTranslatePositionToPixel[j][i] = this.translatePositionToPixel({num: i, tab: j});
+                }
+            }
+        }
+    },
 
     init: function () {
         for (var i = 0; i < 3; i++) {
@@ -11,12 +23,6 @@ JDM.Board = {
 
         this.piecesContainer.y = 25;
         JDM.stage.addChild(this.piecesContainer);
-    },
-
-    placement: function() {
-        JDM.Map.addEventListener('click', function () {
-
-        });
     },
 
     translatePositionToPixel: function(position) {
@@ -46,8 +52,39 @@ JDM.Board = {
 
     addPieces: function() {
         for (var i = 0; i < 9; i++) {
-            JDM.piece({x: i * 25 + 25, y: 0}, 1);
-            JDM.piece({x: i * 25 + 375, y: 0}, 2);
+            JDM.piece({x: i * 25 + 25, y: 25}, 1);
+            JDM.piece({x: i * 25 + 375, y: 25}, 2);
+        }
+    },
+
+    checkAndAdjustPosition: function(position) {
+        var area = 40, returnPosition = {x: null, y: 0};
+
+        this.forEachPieces(this.arrayTranslatePositionToPixel, function(translatePosition) {
+            if (position.x >= (translatePosition.x - area) &&
+                position.x <= (translatePosition.x + area) &&
+                position.y >= (translatePosition.y - area) &&
+                position.y <= (translatePosition.y + area))
+            {
+                returnPosition.x = translatePosition.x;
+                returnPosition.y = translatePosition.y;
+            }
+        });
+
+        if(returnPosition.x) {
+            return returnPosition;
+        }
+
+        return false;
+    },
+
+    forEachPieces: function(_array, callback) {
+        for (var j = 0; j < 3; j++) {
+            for (var i = 0; i < 9; i++) {
+                if (i != 4) {
+                    callback(_array[j][i]);
+                }
+            }
         }
     }
 };

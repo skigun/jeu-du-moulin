@@ -10,16 +10,11 @@ JDM.piece = function (position, player) {
     }
 
     this.shape.graphics.drawCircle(position.x, position.y, 20);
+    JDM.Map.mapContainer.addChild(this.shape);
 
-    JDM.Board.piecesContainer.addChild(this.shape);
+    (function(target, player) {
 
-    this.shape.addEventListener('click', function(e) {
-
-    });
-
-    (function(target) {
         target.onPress = function(e) {
-
             var offset = {x: target.x - e.stageX, y: target.y - e.stageY};
 
             e.onMouseMove = function(e) {
@@ -28,11 +23,19 @@ JDM.piece = function (position, player) {
                 JDM.update = true;
             };
 
+
             e.onMouseUp = function(e) {
-                target.x = 0;
-                target.y = 0;
+                position = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
+
+                if (!position) {
+                    return;
+                }
+
+                JDM.piece({x: position.x, y: position.y}, player);
+                JDM.Map.mapContainer.removeChild(target);
                 JDM.update = true;
             };
+
         };
-    })(this.shape);
+    })(this.shape, player);
 };

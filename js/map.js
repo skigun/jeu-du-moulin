@@ -33,17 +33,12 @@ JDM.Map = {
         circle.graphics.beginFill('#000');
         circle.graphics.drawCircle(0, 0, 10);
 
-        for (var j = 0; j < 3; j++) {
-            for (var i = 0; i < 9; i++) {
-                if (i != 4) {
-                    var position = JDM.Board.translatePositionToPixel({tab: j, num: i})
-                    var _circle = circle.clone();
-                    _circle.x = position.x;
-                    _circle.y = position.y;
+        JDM.Board.forEachPieces(JDM.Board.arrayTranslatePositionToPixel, function(position) {
+            var _circle = circle.clone();
+            _circle.x = position.x;
+            _circle.y = position.y;
 
-                    this.mapContainer.addChild(_circle);
-                }
-            }
-        }
+            JDM.Map.mapContainer.addChild(_circle);
+        });
     }
 };

@@ -11,6 +11,7 @@ window.onload = function() {
     JDM.canvas.getContext('2d');
 
     JDM.Menu.init();
+    JDM.Board.setPositions();
     JDM.Map.init();
     JDM.Board.init();
     JDM.update = true;
