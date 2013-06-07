@@ -4,7 +4,6 @@ window.onload = function() {
 
     JDM.stage.enableMouseOver(10);
     JDM.stage.mouseMoveOutside = true;
-
     JDM.stage.snapToPixelEnabled = true;
 
     JDM.canvas.width = 600;
@@ -14,7 +13,7 @@ window.onload = function() {
     JDM.Menu.init();
     JDM.Map.init();
     JDM.Board.init();
-    JDM.stage.update();
+    JDM.update = true;
 
     createjs.Ticker.addEventListener("tick", JDM.tick);
 };

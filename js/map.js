@@ -45,6 +45,5 @@ JDM.Map = {
                 }
             }
         }
-        this.mapContainer.y = 60;
     }
 };

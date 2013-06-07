@@ -8,7 +8,5 @@ JDM.Menu = {
         var message = new createjs.Text('WELCOME', '24px Arial', '#ff7700');
         message.x = 20;
         message.y = 14;
-
-        this.menuContainer.addChild(message);
     }
 };

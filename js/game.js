@@ -7,8 +7,9 @@ var JDM = {
     update: false,
 
     tick: function() {
-        if(JDM.update)
-        JDM.stage.update();
-        JDM.update = false;
+        if (JDM.update) {
+            JDM.update = false;
+            JDM.stage.update();
+        }
     }
 };

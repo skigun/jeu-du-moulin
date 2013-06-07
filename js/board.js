@@ -20,7 +20,7 @@ JDM.Board = {
     },
 
     translatePositionToPixel: function(position) {
-        if (position.num < 0 || position.num == 4 || position.num > 8 ) {
+        if (position.num < 0 || position.num == 4 || position.num > 8) {
             throw new Error('Wrong position, set to ' + position.num);
         }
 
@@ -45,12 +45,9 @@ JDM.Board = {
     },
 
     addPieces: function() {
-        for(var i = 0; i < 9; i++){
-            JDM.piece({x: i*25 + 25, y: 50}, 1);
-        }
-
-        for(var i = 0; i < 9; i++){
-            JDM.piece({x: i*25 + 375, y: 50}, 2);
+        for (var i = 0; i < 9; i++) {
+            JDM.piece({x: i * 25 + 25, y: 0}, 1);
+            JDM.piece({x: i * 25 + 375, y: 0}, 2);
         }
     }
 };
