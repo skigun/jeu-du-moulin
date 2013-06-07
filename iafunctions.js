@@ -33,7 +33,7 @@ function findAllPieces(stateofthegame, color) {
 				//check si la piece en question peut bouger ou pas, et si elle peut bouger, sur quelles positions
 				Pion myPion = new Pion(i, j);
 				var pionPossiblePos = canMove(stateofthegame, myPion);
-				if (pionPossiblePos.length == 0) {
+				if (pionPossiblePos.length != 0) {
 					var pieceAvailableToMove = [myPion , pionPossiblePos];
 					piecesPositionArray.push(pieceAvailableToMove);
 				}
