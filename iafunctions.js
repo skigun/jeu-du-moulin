@@ -6,14 +6,14 @@ JDM.Pion = function (tableau, indice){
 function nextMoves(stateofthegame, nextplayer) {
 	var newBoards = [];
 	var piecesPositionArray = findAllPieces(stateofthegame, nextplayer);
-	for (int i = 0; i < piecesPositionArray.length; i++) {
+	for (var i = 0, var l = piecesPositionArray.length; i < l; i++) {
 		//recopier l'etat de jeu actuel, et effectuer les changements
-		int posIpion = piecesPositionArray[i][0].i;
-		int posJpion = piecesPositionArray[i][0].j;
+		var posIpion = piecesPositionArray[i][0].i;
+		var posJpion = piecesPositionArray[i][0].j;
 		
-		for (int j = 0; j < piecesPositionArray[i][1].length ; j++) {
-			int newIPos =  piecesPositionArray[i][1][j].i;
-			int newJPos = piecesPositionArray[i][1][j].j;
+		for (var j = 0, var k = piecesPositionArray[i][1].length; j < k; j++) {
+			var newIPos =  piecesPositionArray[i][1][j].i;
+			var newJPos = piecesPositionArray[i][1][j].j;
 			var newSofg = stateofthegame;
 			newSofg[posIpion][posJpion] = 0;
 			newSofg[newIPos][newJPos] = nextplayer;
@@ -25,13 +25,13 @@ function nextMoves(stateofthegame, nextplayer) {
 }
 
 function findAllPieces(stateofthegame, color) {
-	//int colorToSearch = color;
+	//var colorToSearch = color;
 	var piecesPositionArray = [];
-	for (int i = 0; i < 3; i++){
-		for (int j = 0; j < 9; j++) {
+	for (var i = 0; i < 3; i++){
+		for (var j = 0; j < 9; j++) {
 			if  (stateofthegame[i][j] == color) {
 				//check si la piece en question peut bouger ou pas, et si elle peut bouger, sur quelles positions
-				Pion myPion = new Pion(i, j);
+				myPion = new Pion(i, j);
 				var pionPossiblePos = canMove(stateofthegame, myPion);
 				if (pionPossiblePos.length != 0) {
 					var pieceAvailableToMove = [myPion , pionPossiblePos];
@@ -58,21 +58,21 @@ function canMove(stateofthegame, pion) {
 	if (pion.j % 2 == 0) {
 		if (pion.j == 0 || pion.j == 6) {
 			if (stateofthegame[pion.i][3] == 0) {
-				Pion currentPos = new Pion(pion.i, 3);
+				currentPos = new Pion(pion.i, 3);
 				positionsAvailable.push(currentPos);
 			}
 			if (stateofthegame[pion.i][pion.j + 1] == 0) {
-				Pion currentPos = new Pion(pion.i, pion.j + 1);
+				currentPos = new Pion(pion.i, pion.j + 1);
 				positionsAvailable.push(currentPos);
 			}
 		}
 		else if (pion.j == 2 || pion.j == 8) {
 			if (stateofthegame[pion.i][5] == 0) {
-				Pion currentPos = new Pion(pion.i, 5);
+				currentPos = new Pion(pion.i, 5);
 				positionsAvailable.push(currentPos);
 			}
 			if (stateofthegame[pion.i][pion.j - 1] == 0) {
-				Pion currentPos = new Pion(pion.i, pion.j - 1);
+				currentPos = new Pion(pion.i, pion.j - 1);
 				positionsAvailable.push(currentPos);
 			}
 		}
@@ -80,38 +80,38 @@ function canMove(stateofthegame, pion) {
 	else {
 		if (pion.j == 1 || pion.j == 7) {
 			if (stateofthegame[pion.i][pion.j + 1] == 0) {
-				Pion currentPos = new Pion(pion.i, pion.j + 1);
+				currentPos = new Pion(pion.i, pion.j + 1);
 				positionsAvailable.push(currentPos);
 			}
 			if (stateofthegame[pion.i][pion.j - 1] == 0) {
-				Pion currentPos = new Pion(pion.i, pion.j - 1);
+				currentPos = new Pion(pion.i, pion.j - 1);
 				positionsAvailable.push(currentPos);
 			}
 		}
 		else if (pion.j == 3 || pion.j == 5) {
 			if (stateofthegame[pion.i][pion.j + 3] == 0) {
-				Pion currentPos = new Pion(pion.i, pion.j + 3);
+				currentPos = new Pion(pion.i, pion.j + 3);
 				positionsAvailable.push(currentPos);
 			}
 			if (stateofthegame[pion.i][pion.j - 3] == 0) {
-				Pion currentPos = new Pion(pion.i, pion.j - 3);
+				currentPos = new Pion(pion.i, pion.j - 3);
 				positionsAvailable.push(currentPos);
 			}
 		}
 		
 		if (pion.i == 0 || pion.i == 2) {
 			if (stateofthegame[1][pion.j] == 0) {
-				Pion currentPos = new Pion(1, pion.j);
+				currentPos = new Pion(1, pion.j);
 				positionsAvailable.push(currentPos);
 			}
 		}
 		else if (pion.i == 1) {
 			if (stateofthegame[0][pion.j] == 0) {
-				Pion currentPos = new Pion(0, pion.j);
+				currentPos = new Pion(0, pion.j);
 				positionsAvailable.push(currentPos);
 			}
 			if (stateofthegame[2][pion.j] == 0) {
-				Pion currentPos = new Pion(2, pion.j);
+				currentPos = new Pion(2, pion.j);
 				positionsAvailable.push(currentPos);
 			}
 		}
