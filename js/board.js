@@ -52,26 +52,25 @@ JDM.Board = {
 
     addPieces: function() {
         for (var i = 0; i < 9; i++) {
-            JDM.piece({x: i * 25 + 25, y: 25}, 1);
-            JDM.piece({x: i * 25 + 375, y: 25}, 2);
+            new JDM.Piece({x: i * 25 + 25, y: 25, num: null, tab: null}, 1);
+            new JDM.Piece({x: i * 25 + 375, y: 25, num: null, tab: null}, 2);
         }
     },
 
-    checkAndAdjustPosition: function(position) {
-        var area = 40, returnPosition = {x: null, y: 0};
+    checkAndAdjustPosition: function(positionPixel) {
+        var area = 40, returnPosition = null;
 
-        this.forEachPieces(this.arrayTranslatePositionToPixel, function(translatePosition) {
-            if (position.x >= (translatePosition.x - area) &&
-                position.x <= (translatePosition.x + area) &&
-                position.y >= (translatePosition.y - area) &&
-                position.y <= (translatePosition.y + area))
+        this.forEachPieces(this.arrayTranslatePositionToPixel, function(translatePosition, position) {
+            if (positionPixel.x >= (translatePosition.x - area) &&
+                positionPixel.x <= (translatePosition.x + area) &&
+                positionPixel.y >= (translatePosition.y - area) &&
+                positionPixel.y <= (translatePosition.y + area))
             {
-                returnPosition.x = translatePosition.x;
-                returnPosition.y = translatePosition.y;
+                returnPosition = position;
             }
         });
 
-        if(returnPosition.x) {
+        if (returnPosition) {
             return returnPosition;
         }
 
@@ -82,7 +81,7 @@ JDM.Board = {
         for (var j = 0; j < 3; j++) {
             for (var i = 0; i < 9; i++) {
                 if (i != 4) {
-                    callback(_array[j][i]);
+                    callback(_array[j][i], {num: i, tab: j});
                 }
             }
         }

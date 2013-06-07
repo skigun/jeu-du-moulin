@@ -1,6 +1,9 @@
-JDM.piece = function (position, player) {
-    this.shape = new createjs.Shape();
+JDM.Piece = function (position, player) {
+    var self = this;
+    this.shape = null;
+    this.position = position;
 
+    this.shape = new createjs.Shape();
     this.shape.graphics.setStrokeStyle(1).beginStroke("#000");
 
     if (player == 1) {
@@ -9,20 +12,26 @@ JDM.piece = function (position, player) {
         this.shape.graphics.beginFill('#0f0');
     }
 
-    this.shape.graphics.drawCircle(position.x, position.y, 20);
+    // Si on a les positions logiques
+    if (this.position.num != null && this.position.tab != null) {
+        var _position = JDM.Board.arrayTranslatePositionToPixel[this.position.tab][this.position.num];
+        this.shape.graphics.drawCircle(_position.x, _position.y, 20);
+    } else { // Si non on fait avec les positions en pixel
+        this.shape.graphics.drawCircle(this.position.x, this.position.y, 20);
+    }
+
     JDM.Map.mapContainer.addChild(this.shape);
 
-    (function(target, player) {
+    (function(self, player) {
 
-        target.onPress = function(e) {
-            var offset = {x: target.x - e.stageX, y: target.y - e.stageY};
+        self.shape.onPress = function(e) {
+            var offset = {x: self.shape.x - e.stageX, y: self.shape.y - e.stageY};
 
             e.onMouseMove = function(e) {
-                target.x = e.stageX + offset.x;
-                target.y = e.stageY + offset.y;
+                self.shape.x = e.stageX + offset.x;
+                self.shape.y = e.stageY + offset.y;
                 JDM.update = true;
             };
-
 
             e.onMouseUp = function(e) {
                 position = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
@@ -30,12 +39,12 @@ JDM.piece = function (position, player) {
                 if (!position) {
                     return;
                 }
+                console.log(position);
 
-                JDM.piece({x: position.x, y: position.y}, player);
-                JDM.Map.mapContainer.removeChild(target);
+                JDM.Map.mapContainer.removeChild(self.shape);
+                JDM.Piece(position, player);
                 JDM.update = true;
             };
-
         };
-    })(this.shape, player);
+    })(self, player);
 };
