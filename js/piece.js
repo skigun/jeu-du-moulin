@@ -1,50 +1,64 @@
 JDM.Piece = function (position, player) {
-    var self = this;
-    this.shape = null;
+    this.shape = this.draw(position, player);
     this.position = position;
+};
 
-    this.shape = new createjs.Shape();
-    this.shape.graphics.setStrokeStyle(1).beginStroke("#000");
+JDM.Piece.prototype = {
+    draw: function(position, player) {
+        var shape = new createjs.Shape();
 
-    if (player == 1) {
-        this.shape.graphics.beginFill('#f00');
-    } else {
-        this.shape.graphics.beginFill('#0f0');
-    }
+        shape.graphics.setStrokeStyle(1).beginStroke("#000");
 
-    // Si on a les positions logiques
-    if (this.position.num != null && this.position.tab != null) {
-        var _position = JDM.Board.arrayTranslatePositionToPixel[this.position.tab][this.position.num];
-        this.shape.graphics.drawCircle(_position.x, _position.y, 20);
-    } else { // Si non on fait avec les positions en pixel
-        this.shape.graphics.drawCircle(this.position.x, this.position.y, 20);
-    }
+        if (player == 1) {
+            shape.graphics.beginFill('#f00');
+        } else {
+            shape.graphics.beginFill('#0f0');
+        }
 
-    JDM.Map.mapContainer.addChild(this.shape);
+        // Si on a les positions logiques
+        if (position.num != null && position.tab != null) {
+            var _position = JDM.Board.arrayTranslatePositionToPixel[position.tab][position.num];
+            shape.graphics.drawCircle(_position.x, _position.y, 20);
+        } else { // Si non on fait avec les positions en pixel
+            shape.graphics.drawCircle(position.x, position.y, 20);
+        }
 
-    (function(self, player) {
+        JDM.Map.mapContainer.addChild(shape);
 
-        self.shape.onPress = function(e) {
-            var offset = {x: self.shape.x - e.stageX, y: self.shape.y - e.stageY};
+        this.setEvent(shape, player, position);
+    },
+
+    setEvent: function(shape, player, position) {
+        shape.onPress = function(e) {
+            var offset = {x: shape.x - e.stageX, y: shape.y - e.stageY};
 
             e.onMouseMove = function(e) {
-                self.shape.x = e.stageX + offset.x;
-                self.shape.y = e.stageY + offset.y;
+                shape.x = e.stageX + offset.x;
+                shape.y = e.stageY + offset.y;
                 JDM.update = true;
             };
 
             e.onMouseUp = function(e) {
-                position = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
+                var newPosition = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
 
-                if (!position) {
+                if (!newPosition) {
+                    if (position.num != null && position.tab != null) {
+                        JDM.Map.mapContainer.removeChild(shape);
+                        JDM.Piece.prototype.draw(position, player);
+                    }
+
+                    shape.x = 0;
+                    shape.y = 0;
+                    JDM.update = true;
+
                     return;
                 }
-                console.log(position);
 
-                JDM.Map.mapContainer.removeChild(self.shape);
-                JDM.Piece(position, player);
+                JDM.Map.mapContainer.removeChild(shape);
+                JDM.Piece.prototype.draw(newPosition, player);
+
                 JDM.update = true;
             };
         };
-    })(self, player);
+    }
 };
