@@ -1,17 +1,17 @@
-JDM.Pion = function (tableau, indice){
-	this.i = tableau;
-	this.j = indice;
+JDM.Pion = function (tableau, indice) {
+    this.i = tableau;
+    this.j = indice;
 }
 
 function nextMoves(stateofthegame, nextplayer) {
 	var newBoards = [];
 	var piecesPositionArray = findAllPieces(stateofthegame, nextplayer);
-	for (var i = 0, var l = piecesPositionArray.length; i < l; i++) {
+	for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
 		//recopier l'etat de jeu actuel, et effectuer les changements
 		var posIpion = piecesPositionArray[i][0].i;
 		var posJpion = piecesPositionArray[i][0].j;
 		
-		for (var j = 0, var k = piecesPositionArray[i][1].length; j < k; j++) {
+		for (var j = 0, k = piecesPositionArray[i][1].length; j < k; j++) {
 			var newIPos =  piecesPositionArray[i][1][j].i;
 			var newJPos = piecesPositionArray[i][1][j].j;
 			var newSofg = stateofthegame;
@@ -29,7 +29,7 @@ function findAllPieces(stateofthegame, color) {
 	var piecesPositionArray = [];
 	for (var i = 0; i < 3; i++){
 		for (var j = 0; j < 9; j++) {
-			if  (stateofthegame[i][j] == color) {
+			if (stateofthegame[i][j] == color) {
 				//check si la piece en question peut bouger ou pas, et si elle peut bouger, sur quelles positions
 				myPion = new Pion(i, j);
 				var pionPossiblePos = canMove(stateofthegame, myPion);
@@ -118,5 +118,4 @@ function canMove(stateofthegame, pion) {
 	}
 	
 	return positionsAvailable;
-
 }

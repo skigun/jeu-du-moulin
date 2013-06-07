@@ -28,6 +28,7 @@ JDM.Piece.prototype = {
         this.setEvent(shape, player, position);
     },
 
+
     setEvent: function(shape, player, position) {
         shape.onPress = function(e) {
             var offset = {x: shape.x - e.stageX, y: shape.y - e.stageY};
