@@ -25,7 +25,13 @@ JDM.Piece.prototype = {
 
         JDM.Map.mapContainer.addChild(shape);
 
-        this.setEvent(shape, player, position);
+        // on set les events seulement au joueur humain
+        if (player == 1) {
+            this.setEvent(shape, player, position);
+        }
+        if (player == 2) {
+            JDM.Board.iaPieces.push(shape);
+        }
     },
 
 
@@ -42,24 +48,47 @@ JDM.Piece.prototype = {
             e.onMouseUp = function(e) {
                 var newPosition = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
 
-                if (newPosition) {
-                    // si on bouge le pion de sa position actuelle on met à 0 l'emplacement
-                    if (position.tab != null && position.num != null) {
-                        JDM.Board.positions[position.tab][position.num] = 0;
-                    }
+                console.log('position : ', position)
+                console.log('nouvelle position : ', newPosition)
 
-                    // si le nouvel emplacement est à 0 on peut placer son pion.
-                    if (JDM.Board.positions[newPosition.tab][newPosition.num] == 0) {
-                        JDM.Board.positions[newPosition.tab][newPosition.num] = player;
+                // placing pieces
+                if (JDM.step == 0) {
+                    if (newPosition && position.tab == null && position.num == null) {
 
-                        JDM.Map.mapContainer.removeChild(shape);
-                        JDM.Piece.prototype.draw(newPosition, player);
+                        // si le nouvel emplacement n'est pas pris on peut placer son pion.
+                        if (JDM.Board.positions[newPosition.tab][newPosition.num] == 0) {
+                            JDM.Board.positions[newPosition.tab][newPosition.num] = player;
+
+                            JDM.Map.mapContainer.removeChild(shape);
+                            JDM.Piece.prototype.draw(newPosition, player);
+
+                            // au tour de l'IA
+                            JDM.Ia.placePieces();
+
+                            // on décremente le nombre de pieces à poser
+                            JDM.piecesToPlace -= 1;
+
+                            if(JDM.piecesToPlace == 0) {
+                                JDM.step = 1;
+                            }
+                        }
                     }
+                    shape.x = 0;
+                    shape.y = 0;
+
+                    JDM.update = true;
                 }
-                shape.x = 0;
-                shape.y = 0;
 
-                JDM.update = true;
+                // moving pieces
+                if (JDM.step == 1) {
+                    /*
+                     // si on bouge le pion de sa position actuelle on met à 0 l'emplacement
+                     if (position.tab != null && position.num != null) {
+                     JDM.Board.positions[position.tab][position.num] = 0;
+                     }
+                     */
+                    console.log('next step')
+                }
             };
         };
     }

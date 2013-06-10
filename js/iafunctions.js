@@ -1,121 +1,290 @@
-JDM.Pion = function (tableau, indice) {
-    this.i = tableau;
-    this.j = indice;
-}
+JDM.Ia = {
+    Pion: function (tableau, indice) {
+        this.i = tableau;
+        this.j = indice;
+    },
 
-function nextMoves(stateofthegame, nextplayer) {
-	var newBoards = [];
-	var piecesPositionArray = findAllPieces(stateofthegame, nextplayer);
-	for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
-		//recopier l'etat de jeu actuel, et effectuer les changements
-		var posIpion = piecesPositionArray[i][0].i;
-		var posJpion = piecesPositionArray[i][0].j;
-		
-		for (var j = 0, k = piecesPositionArray[i][1].length; j < k; j++) {
-			var newIPos =  piecesPositionArray[i][1][j].i;
-			var newJPos = piecesPositionArray[i][1][j].j;
-			var newSofg = stateofthegame;
-			newSofg[posIpion][posJpion] = 0;
-			newSofg[newIPos][newJPos] = nextplayer;
-			newBoards.push(newSofg);
-		}
-	}
-	
-	return newBoards;
-}
+    gameCopy: null,
+    maxi: 0,
+    maxj: 0,
 
-function findAllPieces(stateofthegame, color) {
-	//var colorToSearch = color;
-	var piecesPositionArray = [];
-	for (var i = 0; i < 3; i++){
-		for (var j = 0; j < 9; j++) {
-			if (stateofthegame[i][j] == color) {
-				//check si la piece en question peut bouger ou pas, et si elle peut bouger, sur quelles positions
-				myPion = new Pion(i, j);
-				var pionPossiblePos = canMove(stateofthegame, myPion);
-				if (pionPossiblePos.length != 0) {
-					var pieceAvailableToMove = [myPion , pionPossiblePos];
-					piecesPositionArray.push(pieceAvailableToMove);
-				}
-			}
-		}
-	}
-	
-	return piecesPositionArray;
-}
+    placePieces: function() {
 
-function canMove(stateofthegame, pion) {
-	/*
-		Conditions pour savoir si une piece peut bouger
-		Si 0 ou 6 : check 3 et +1
-		Si 2 ou 8 : check 5 et -1
-		Si impair,
-		Si i = 0 ou i = 2, check [1][pos], si i = 1, check [0][pos] et [2][pos]
-		Si 1 ou 7 : check +1 et -1
-		Si 3 ou 5 : check +3 et -3
-	*/
-	var positionsAvailable = [];
-	if (pion.j % 2 == 0) {
-		if (pion.j == 0 || pion.j == 6) {
-			if (stateofthegame[pion.i][3] == 0) {
-				currentPos = new Pion(pion.i, 3);
-				positionsAvailable.push(currentPos);
-			}
-			if (stateofthegame[pion.i][pion.j + 1] == 0) {
-				currentPos = new Pion(pion.i, pion.j + 1);
-				positionsAvailable.push(currentPos);
-			}
-		}
-		else if (pion.j == 2 || pion.j == 8) {
-			if (stateofthegame[pion.i][5] == 0) {
-				currentPos = new Pion(pion.i, 5);
-				positionsAvailable.push(currentPos);
-			}
-			if (stateofthegame[pion.i][pion.j - 1] == 0) {
-				currentPos = new Pion(pion.i, pion.j - 1);
-				positionsAvailable.push(currentPos);
-			}
-		}
-	}
-	else {
-		if (pion.j == 1 || pion.j == 7) {
-			if (stateofthegame[pion.i][pion.j + 1] == 0) {
-				currentPos = new Pion(pion.i, pion.j + 1);
-				positionsAvailable.push(currentPos);
-			}
-			if (stateofthegame[pion.i][pion.j - 1] == 0) {
-				currentPos = new Pion(pion.i, pion.j - 1);
-				positionsAvailable.push(currentPos);
-			}
-		}
-		else if (pion.j == 3 || pion.j == 5) {
-			if (stateofthegame[pion.i][pion.j + 3] == 0) {
-				currentPos = new Pion(pion.i, pion.j + 3);
-				positionsAvailable.push(currentPos);
-			}
-			if (stateofthegame[pion.i][pion.j - 3] == 0) {
-				currentPos = new Pion(pion.i, pion.j - 3);
-				positionsAvailable.push(currentPos);
-			}
-		}
-		
-		if (pion.i == 0 || pion.i == 2) {
-			if (stateofthegame[1][pion.j] == 0) {
-				currentPos = new Pion(1, pion.j);
-				positionsAvailable.push(currentPos);
-			}
-		}
-		else if (pion.i == 1) {
-			if (stateofthegame[0][pion.j] == 0) {
-				currentPos = new Pion(0, pion.j);
-				positionsAvailable.push(currentPos);
-			}
-			if (stateofthegame[2][pion.j] == 0) {
-				currentPos = new Pion(2, pion.j);
-				positionsAvailable.push(currentPos);
-			}
-		}
-	}
-	
-	return positionsAvailable;
+        // minMax calcule le best move (maxi, maxj) de profondeur 2 (il ne va calculer qu'un coup à l'avance)
+        this.minMax(JDM.Board.positions, 2);
+
+        // on met à jour la position du best move
+        JDM.Board.positions[this.maxi][this.maxj] = 2;
+
+        // on déplace la pièce sur cette position
+        var newPosition = JDM.Board.arrayTranslatePositionToPixel[this.maxi][this.maxj];
+        var selectedPiece = JDM.Board.iaPieces.shift();
+
+        JDM.Map.mapContainer.removeChild(selectedPiece);
+        JDM.Piece.prototype.draw(newPosition, 2);
+    },
+
+    minMax: function(game, depth) {
+        // on copie le jeux
+        this.gameCopy = game;
+
+        // on commence par calculer max
+        this.max(this.gameCopy, depth);
+    },
+
+    max: function(gameCopy, depth) {
+
+        if (depth == 0) {
+            return this.eval(gameCopy);
+        }
+
+        var max = -10000;
+        var tmp;
+
+        for (var i = 0; i < 3; i++){
+            for (var j = 0; j < 9; j++) {
+                if (gameCopy[i][j] == 0 && j != 4) {
+
+                    gameCopy[i][j] = 2;
+
+                    tmp = this.min(gameCopy, depth - 1);
+
+                    if (tmp > max) {
+
+                        max = tmp;
+                        this.maxi = i;
+                        this.maxj = j;
+                    }
+
+                    gameCopy[i][j] = 0;
+                }
+            }
+        }
+
+        return max;
+    },
+
+    min: function(gameCopy, depth) {
+
+        if (depth == 0) {
+            return this.eval(gameCopy);
+        }
+
+        var min = 10000;
+        var tmp;
+
+        for (var i = 0; i < 3; i++){
+            for (var j = 0; j < 9; j++) {
+                if (gameCopy[i][j] == 0 && j != 4) {
+
+                    gameCopy[i][j] = 1;
+
+                    tmp = this.max(gameCopy, depth - 1);
+
+                    if (tmp < min) {
+                        min = tmp;
+                    }
+
+                    gameCopy[i][j] = 0;
+                }
+            }
+        }
+
+        return min;
+    },
+
+    eval: function(gameCopy) {
+
+        var score = 0;
+
+        for (var i = 0; i < 3; i++) {
+
+            // moulin horizontal haut
+            if (gameCopy[i][0] == 2 && gameCopy[i][1] == 2 && gameCopy[i][2] == 2) {
+                console.log("moulin horizontal haut")
+                score += 20;
+            }
+            else if (gameCopy[i][0] == 1 && gameCopy[i][1] == 1 && gameCopy[i][2] == 1) {
+                score -= 20;
+            }
+
+            // moulin horizontal bas
+            if (gameCopy[i][6] == 2 && gameCopy[i][7] == 2 && gameCopy[i][7] == 2) {
+                console.log("moulin horizontal bas")
+                score += 20;
+            }
+            else if (gameCopy[i][6] == 1 && gameCopy[i][7] == 1 && gameCopy[i][7] == 1) {
+                score -= 20;
+            }
+
+            // moulin vertical gauche
+            if (gameCopy[i][0] == 2 && gameCopy[i][3] == 2 && gameCopy[i][6] == 2) {
+                console.log("moulin vertical gauche")
+                score += 20;
+            }
+            else if (gameCopy[i][0] == 1 && gameCopy[i][3] == 1 && gameCopy[i][6] == 1) {
+                score -= 20;
+            }
+
+            // moulin vertical droite
+            if (gameCopy[i][2] == 2 && gameCopy[i][5] == 2 && gameCopy[i][8] == 2) {
+                console.log("moulin vertical droite")
+                score += 20;
+            }
+            else if (gameCopy[i][2] == 1 && gameCopy[i][5] == 1 && gameCopy[i][8] == 1) {
+                score -= 20;
+            }
+        }
+
+        // Moulin vertical haut
+        if (gameCopy[0][1] == 2 && gameCopy[1][1] == 2 && gameCopy[2][1] == 2){
+            console.log('moulin vertical haut')
+            score += 20;
+        } else if (gameCopy[0][1] == 1 && gameCopy[1][1] == 1 && gameCopy[2][1] == 1){
+            score -= 20;
+        }
+
+         // Moulin vertical bas
+        if (gameCopy[0][7] == 2 && gameCopy[1][7] == 2 && gameCopy[2][7] == 2){
+            console.log('moulin vertical bas')
+            score += 20;
+        } else if (gameCopy[0][7] == 1 && gameCopy[1][7] == 1 && gameCopy[2][7] == 1){
+            score -= 20;
+        }
+
+        // Moulin horizontal gauche
+        if (gameCopy[0][3] == 2 && gameCopy[1][3] == 2 && gameCopy[2][3] == 2){
+            console.log('moulin horizontal gauche')
+            score += 20;
+        } else if (gameCopy[0][3] == 1 && gameCopy[1][3] == 1 && gameCopy[2][3] == 1){
+            score -= 20;
+        }
+
+        // Moulin horizontal droite
+        if (gameCopy[0][5] == 2 && gameCopy[1][5] == 2 && gameCopy[2][5] == 2){
+            console.log('moulin horizontal droite')
+            score += 20;
+        } else  if (gameCopy[0][5] == 1 && gameCopy[1][5] == 1 && gameCopy[2][5] == 1){
+            score -= 20;
+        }
+
+        return score;
+    },
+
+    nextMoves: function(stateofthegame, nextplayer) {
+        var newBoards = [];
+        var piecesPositionArray = this.findAllPieces(stateofthegame, nextplayer);
+        for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
+            //recopier l'etat de jeu actuel, et effectuer les changements
+            var posIpion = piecesPositionArray[i][0].i;
+            var posJpion = piecesPositionArray[i][0].j;
+
+            for (var j = 0, k = piecesPositionArray[i][1].length; j < k; j++) {
+                var newIPos =  piecesPositionArray[i][1][j].i;
+                var newJPos = piecesPositionArray[i][1][j].j;
+                var newSofg = stateofthegame;
+                newSofg[posIpion][posJpion] = 0;
+                newSofg[newIPos][newJPos] = nextplayer;
+                newBoards.push(newSofg);
+            }
+        }
+
+        return newBoards;
+    },
+
+    findAllPieces: function(stateofthegame, color) {
+        //var colorToSearch = color;
+        var piecesPositionArray = [];
+        for (var i = 0; i < 3; i++){
+            for (var j = 0; j < 9; j++) {
+                if (stateofthegame[i][j] == color) {
+                    //check si la piece en question peut bouger ou pas, et si elle peut bouger, sur quelles positions
+                    myPion = new this.Pion(i, j);
+                    var pionPossiblePos = this.canMove(stateofthegame, myPion);
+                    if (pionPossiblePos.length != 0) {
+                        var pieceAvailableToMove = [myPion , pionPossiblePos];
+                        piecesPositionArray.push(pieceAvailableToMove);
+                    }
+                }
+            }
+        }
+
+        return piecesPositionArray;
+    },
+
+    canMove: function(stateofthegame, pion) {
+        /*
+            Conditions pour savoir si une piece peut bouger
+            Si 0 ou 6 : check 3 et +1
+            Si 2 ou 8 : check 5 et -1
+            Si impair,
+            Si i = 0 ou i = 2, check [1][pos], si i = 1, check [0][pos] et [2][pos]
+            Si 1 ou 7 : check +1 et -1
+            Si 3 ou 5 : check +3 et -3
+        */
+        var positionsAvailable = [];
+        if (pion.j % 2 == 0) {
+            if (pion.j == 0 || pion.j == 6) {
+                if (stateofthegame[pion.i][3] == 0) {
+                    currentPos = new this.Pion(pion.i, 3);
+                    positionsAvailable.push(currentPos);
+                }
+                if (stateofthegame[pion.i][pion.j + 1] == 0) {
+                    currentPos = new this.Pion(pion.i, pion.j + 1);
+                    positionsAvailable.push(currentPos);
+                }
+            }
+            else if (pion.j == 2 || pion.j == 8) {
+                if (stateofthegame[pion.i][5] == 0) {
+                    currentPos = new this.Pion(pion.i, 5);
+                    positionsAvailable.push(currentPos);
+                }
+                if (stateofthegame[pion.i][pion.j - 1] == 0) {
+                    currentPos = new this.Pion(pion.i, pion.j - 1);
+                    positionsAvailable.push(currentPos);
+                }
+            }
+        }
+        else {
+            if (pion.j == 1 || pion.j == 7) {
+                if (stateofthegame[pion.i][pion.j + 1] == 0) {
+                    currentPos = new this.Pion(pion.i, pion.j + 1);
+                    positionsAvailable.push(currentPos);
+                }
+                if (stateofthegame[pion.i][pion.j - 1] == 0) {
+                    currentPos = new this.Pion(pion.i, pion.j - 1);
+                    positionsAvailable.push(currentPos);
+                }
+            }
+            else if (pion.j == 3 || pion.j == 5) {
+                if (stateofthegame[pion.i][pion.j + 3] == 0) {
+                    currentPos = new this.Pion(pion.i, pion.j + 3);
+                    positionsAvailable.push(currentPos);
+                }
+                if (stateofthegame[pion.i][pion.j - 3] == 0) {
+                    currentPos = new this.Pion(pion.i, pion.j - 3);
+                    positionsAvailable.push(currentPos);
+                }
+            }
+
+            if (pion.i == 0 || pion.i == 2) {
+                if (stateofthegame[1][pion.j] == 0) {
+                    currentPos = new this.Pion(1, pion.j);
+                    positionsAvailable.push(currentPos);
+                }
+            }
+            else if (pion.i == 1) {
+                if (stateofthegame[0][pion.j] == 0) {
+                    currentPos = new this.Pion(0, pion.j);
+                    positionsAvailable.push(currentPos);
+                }
+                if (stateofthegame[2][pion.j] == 0) {
+                    currentPos = new this.Pion(2, pion.j);
+                    positionsAvailable.push(currentPos);
+                }
+            }
+        }
+
+        return positionsAvailable;
+    }
 }

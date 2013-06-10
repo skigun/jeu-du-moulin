@@ -4,6 +4,7 @@ var JDM = {
     canvas: null,
     stage: null,
     step: 0,
+    piecesToPlace: 9,
     update: false,
 
     tick: function() {

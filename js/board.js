@@ -1,5 +1,6 @@
 JDM.Board = {
     positions: [],
+    iaPieces: [],
     piecesContainer: new createjs.Container(),
     arrayTranslatePositionToPixel: [],
 
