@@ -293,7 +293,7 @@ JDM.Ia = {
         }
 
         return positionsAvailable;
-    }
+    },
 	
 	findMills: function(stateofthegame) {
 	
@@ -382,7 +382,7 @@ JDM.Ia = {
         }
 		
 		return mills;
-	}
+	},
 	
 	isExistingMill: function (mill) {
 		var result = false;
@@ -394,7 +394,7 @@ JDM.Ia = {
 		}
 		
 		return result;
-	}
+	},
 	
 	pionEquals: function (pion1, pion2) {
 		if (pion1.i == pion2.i && pion1.j == pion2.j) {
@@ -403,22 +403,39 @@ JDM.Ia = {
 		else {
 			return false;
 		}
-	}
+	},
 
 	bestNextMove: function (stateofthegame, player) {
 		maxPhase2(stateofthegame, 4);
-	}
+	},
 	
 	maxPhase2: function (stateofthegame, depth) {
-	
-	}
+		if (depth == 0) {
+            return this.mapScore(stateofthegame);
+        }
+
+        var max = -10000;
+        var tmp;
+		var possibleSotg = nextMoves(stateofthegame, 2)
+
+		for (var i = 0, l = possibleSotg.length; i < l; i++) {
+			tmp = this.minPhase2(possibleSotg[i], depth - 1);
+			if (tmp > max) {
+				max = tmp;
+				this.maxi = i;
+				this.maxj = j;
+			}
+		}
+                
+        return max;
+	},
 	
 	minPhase2: function (stateofthegame, depth) {
 	
-	}
+	},
 	
 	mapScore: function (stateofthegame) {
 	
-	}
+	},
 }
 
