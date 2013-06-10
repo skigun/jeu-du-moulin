@@ -3,10 +3,17 @@ JDM.Ia = {
         this.i = tableau;
         this.j = indice;
     },
+	Mill: function (pion1, pion2, pion3, color) {
+		this.pion1 = pion1;
+		this.pion2 = pion2;
+		this.pion3 = pion3;
+		this.color = color;
+	},
 
     gameCopy: null,
     maxi: 0,
     maxj: 0,
+	existingMills: [],
 
     placePieces: function() {
 
@@ -109,11 +116,11 @@ JDM.Ia = {
             }
 
             // moulin horizontal bas
-            if (gameCopy[i][6] == 2 && gameCopy[i][7] == 2 && gameCopy[i][7] == 2) {
+            if (gameCopy[i][6] == 2 && gameCopy[i][7] == 2 && gameCopy[i][8] == 2) {
                 console.log("moulin horizontal bas")
                 score += 20;
             }
-            else if (gameCopy[i][6] == 1 && gameCopy[i][7] == 1 && gameCopy[i][7] == 1) {
+            else if (gameCopy[i][6] == 1 && gameCopy[i][7] == 1 && gameCopy[i][8] == 1) {
                 score -= 20;
             }
 
@@ -287,4 +294,131 @@ JDM.Ia = {
 
         return positionsAvailable;
     }
+	
+	findMills: function(stateofthegame) {
+	
+		var mills = [];
+		for (var i = 0; i < 3; i++) {
+		
+            // moulin horizontal haut
+            if (stateofthegame[i][0] == 2 && stateofthegame[i][1] == 2 && stateofthegame[i][2] == 2) {
+				mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 1), new this.Pion(i, 2), 2);
+				mills.push(mill)
+            }
+            else if (stateofthegame[i][0] == 1 && stateofthegame[i][1] == 1 && stateofthegame[i][2] == 1) {
+                mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 1), new this.Pion(i, 2), 1);
+				mills.push(mill)
+            }
+
+            // moulin horizontal bas
+            if (stateofthegame[i][6] == 2 && stateofthegame[i][7] == 2 && stateofthegame[i][8] == 2) {
+                mill = new this.Mill(new this.Pion(i, 6), new this.Pion(i, 7), new this.Pion(i, 8), 2);
+				mills.push(mill)
+            }
+            else if (stateofthegame[i][6] == 1 && stateofthegame[i][7] == 1 && stateofthegame[i][8] == 1) {
+                mill = new this.Mill(new this.Pion(i, 6), new this.Pion(i, 7), new this.Pion(i, 8), 1);
+				mills.push(mill)
+            }
+
+            // moulin vertical gauche
+            if (stateofthegame[i][0] == 2 && stateofthegame[i][3] == 2 && stateofthegame[i][6] == 2) {
+                mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 3), new this.Pion(i, 6), 2);
+				mills.push(mill)
+            }
+            else if (stateofthegame[i][0] == 1 && stateofthegame[i][3] == 1 && stateofthegame[i][6] == 1) {
+                mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 3), new this.Pion(i, 6), 1);
+				mills.push(mill)
+            }
+
+            // moulin vertical droite
+            if (stateofthegame[i][2] == 2 && stateofthegame[i][5] == 2 && stateofthegame[i][8] == 2) {
+                mill = new this.Mill(new this.Pion(i, 2), new this.Pion(i, 5), new this.Pion(i, 8), 2);
+				mills.push(mill)
+            }
+            else if (stateofthegame[i][2] == 1 && stateofthegame[i][5] == 1 && stateofthegame[i][8] == 1) {
+                mill = new this.Mill(new this.Pion(i, 2), new this.Pion(i, 5), new this.Pion(i, 8), 1);
+				mills.push(mill)
+            }
+        }
+
+        // Moulin vertical haut
+        if (stateofthegame[0][1] == 2 && stateofthegame[1][1] == 2 && stateofthegame[2][1] == 2){
+            mill = new this.Mill(new this.Pion(0, 1), new this.Pion(1, 1), new this.Pion(2, 1), 2);
+			mills.push(mill)
+        } 
+		else if (stateofthegame[0][1] == 1 && stateofthegame[1][1] == 1 && stateofthegame[2][1] == 1){
+            mill = new this.Mill(new this.Pion(0, 1), new this.Pion(1, 1), new this.Pion(2, 1), 1);
+			mills.push(mill)
+        }
+
+         // Moulin vertical bas
+        if (stateofthegame[0][7] == 2 && stateofthegame[1][7] == 2 && stateofthegame[2][7] == 2){
+            mill = new this.Mill(new this.Pion(0, 7), new this.Pion(1, 7), new this.Pion(2, 7), 2);
+			mills.push(mill)
+        } 
+		else if (stateofthegame[0][7] == 1 && stateofthegame[1][7] == 1 && stateofthegame[2][7] == 1){
+			mill = new this.Mill(new this.Pion(0, 7), new this.Pion(1, 7), new this.Pion(2, 7), 1);
+			mills.push(mill)
+        }
+
+        // Moulin horizontal gauche
+        if (stateofthegame[0][3] == 2 && stateofthegame[1][3] == 2 && stateofthegame[2][3] == 2){
+            mill = new this.Mill(new this.Pion(0, 3), new this.Pion(1, 3), new this.Pion(2, 3), 2);
+			mills.push(mill)
+        } 
+		else if (stateofthegame[0][3] == 1 && stateofthegame[1][3] == 1 && stateofthegame[2][3] == 1){
+            mill = new this.Mill(new this.Pion(0, 3), new this.Pion(1, 3), new this.Pion(2, 3), 1);
+			mills.push(mill)
+        }
+
+        // Moulin horizontal droite
+        if (stateofthegame[0][5] == 2 && stateofthegame[1][5] == 2 && stateofthegame[2][5] == 2){
+            mill = new this.Mill(new this.Pion(0, 5), new this.Pion(1, 5), new this.Pion(2, 5), 2);
+			mills.push(mill)
+        } 
+		else if (gameCopy[0][5] == 1 && gameCopy[1][5] == 1 && gameCopy[2][5] == 1){
+            mill = new this.Mill(new this.Pion(0, 5), new this.Pion(1, 5), new this.Pion(2, 5), 1);
+			mills.push(mill)
+        }
+		
+		return mills;
+	}
+	
+	isExistingMill: function (mill) {
+		var result = false;
+		
+		for (var i = 0, l = existingMills.length; i < l ; i++) {
+			if (pionEquals(existingMills[i].pion1, mill.pion1) && pionEquals(existingMills[i].pion2, mill.pion2) && pionEquals(existingMills[i].pion3, mill.pion3)) {
+				return true;
+			}
+		}
+		
+		return result;
+	}
+	
+	pionEquals: function (pion1, pion2) {
+		if (pion1.i == pion2.i && pion1.j == pion2.j) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	bestNextMove: function (stateofthegame, player) {
+		maxPhase2(stateofthegame, 4);
+	}
+	
+	maxPhase2: function (stateofthegame, depth) {
+	
+	}
+	
+	minPhase2: function (stateofthegame, depth) {
+	
+	}
+	
+	mapScore: function (stateofthegame) {
+	
+	}
 }
+
