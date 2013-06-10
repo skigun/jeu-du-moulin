@@ -14,6 +14,7 @@ JDM.Ia = {
     maxi: 0,
     maxj: 0,
 	existingMills: [],
+	bestNextSotg: [],
 
     placePieces: function() {
 
@@ -406,7 +407,10 @@ JDM.Ia = {
 	},
 
 	bestNextMove: function (stateofthegame, player) {
+		bestNextSotg = [];
 		maxPhase2(stateofthegame, 4);
+		var i = Math.random() * 10;
+		return bestNextSotg[i];
 	},
 	
 	maxPhase2: function (stateofthegame, depth) {
@@ -420,10 +424,9 @@ JDM.Ia = {
 
 		for (var i = 0, l = possibleSotg.length; i < l; i++) {
 			tmp = this.minPhase2(possibleSotg[i], depth - 1);
-			if (tmp > max) {
+			if (tmp >= max) {
 				max = tmp;
-				this.maxi = i;
-				this.maxj = j;
+				bestNextSotg.push(possibleSotg[i]);
 			}
 		}
                 
@@ -431,11 +434,26 @@ JDM.Ia = {
 	},
 	
 	minPhase2: function (stateofthegame, depth) {
+		if (depth == 0) {
+            return this.mapScore(stateofthegame);
+        }
+
+        var min = 10000;
+        var tmp;
+		var possibleSotg = nextMoves(stateofthegame, 1)
+
+		for (var i = 0, l = possibleSotg.length; i < l; i++) {
+			tmp = this.maxPhase2(possibleSotg[i], depth - 1);
+			if (tmp < min) {
+				min = tmp;
+			}
+		}
 	
+        return min;
 	},
 	
 	mapScore: function (stateofthegame) {
-	
+		var mills = findMills(stateofthegame);
 	},
 }
 
