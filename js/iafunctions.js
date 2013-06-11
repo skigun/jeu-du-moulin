@@ -601,9 +601,12 @@ JDM.Ia = {
 	
 	testFunction: function() {
 		var stateofthegame = [];
-		var tab1 = [0,0,0,0,null,0,0,0,0];
-		var tab2 = [0,0,0,0,null,0,0,0,0];
-		var tab3 = [0,0,0,0,null,0,0,0,0];
+		var tab1 = [1,2,1,1,null,1,2,1,2];
+		var tab2 = [2,1,2,1,null,1,1,2,0];
+		var tab3 = [0,2,0,2,null,2,0,0,0];
+		stateofthegame = [tab1, tab2, tab3];
+		var next = this.nextMoves(stateofthegame, 2);
+		console.log(next);
 	},
 }
 
