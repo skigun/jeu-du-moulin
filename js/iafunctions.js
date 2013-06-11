@@ -454,6 +454,7 @@ JDM.Ia = {
 	
 	mapScore: function (stateofthegame) {
 		var mills = findMills(stateofthegame);
+		var score = 0;
 		var numberOfIaMills = 0;
 		var numberOfHumanMills = 0;
 		
@@ -500,6 +501,15 @@ JDM.Ia = {
 				}
 			}
 		}
+		
+		score += (numberOfIaMills * 50);
+		score -= (numberOfHumanMills * 50);
+		score += (iaFixedPieces * 15);
+		score -= (humanFixedPieces * 15);
+		score += (iaAdjPieces * 8);
+		score -= (humanAdjPieces * 8);
+		
+		return score;
 	},
 	
 	countPieces: function (stateofthegame, color) {
