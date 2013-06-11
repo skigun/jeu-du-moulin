@@ -86,5 +86,13 @@ JDM.Board = {
                 }
             }
         }
+    },
+
+    drawGame: function(stateofthegame) {
+        this.forEachPieces(stateofthegame, function(value, position) {
+            if(value != 0) {
+                JDM.Piece.prototype.draw(position, value);
+            }
+        });
     }
 };
