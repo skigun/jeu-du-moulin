@@ -3,11 +3,11 @@ JDM.Ia = {
         this.i = tableau;
         this.j = indice;
     },
-	Mill: function (pion1, pion2, pion3, color) {
+	Mill: function (pion1, pion2, pion3, player) {
 		this.pion1 = pion1;
 		this.pion2 = pion2;
 		this.pion3 = pion3;
-		this.color = color;
+		this.player = player;
 	},
 
     gameCopy: null,
@@ -16,7 +16,7 @@ JDM.Ia = {
 	existingMills: [],
 	bestNextSotg: [],
 
-    placePieces: function() {
+    placePieces: function () {
 
         // minMax calcule le best move (maxi, maxj) de profondeur 2 (il ne va calculer qu'un coup à l'avance)
         this.minMax(JDM.Board.positions, 2);
@@ -32,7 +32,7 @@ JDM.Ia = {
         JDM.Piece.prototype.draw(newPosition, 2);
     },
 
-    minMax: function(game, depth) {
+    minMax: function (game, depth) {
         // on copie le jeux
         this.gameCopy = game;
 
@@ -72,7 +72,7 @@ JDM.Ia = {
         return max;
     },
 
-    min: function(gameCopy, depth) {
+    min: function (gameCopy, depth) {
 
         if (depth == 0) {
             return this.evaluation(gameCopy);
@@ -101,7 +101,7 @@ JDM.Ia = {
         return min;
     },
 
-    evaluation: function(gameCopy) {
+    evaluation: function (gameCopy) {
 
         var score = 0;
 
@@ -179,7 +179,7 @@ JDM.Ia = {
         return score;
     },
 
-    nextMoves: function(stateofthegame, nextplayer) {
+    nextMoves: function (stateofthegame, nextplayer) {
         var newBoards = [];
         var piecesPositionArray = this.findAllPieces(stateofthegame, nextplayer);
         for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
@@ -200,7 +200,7 @@ JDM.Ia = {
         return newBoards;
     },
 
-    findAllPieces: function(stateofthegame, color) {
+    findAllPieces: function (stateofthegame, color) {
         //var colorToSearch = color;
         var piecesPositionArray = [];
         for (var i = 0; i < 3; i++){
@@ -220,7 +220,7 @@ JDM.Ia = {
         return piecesPositionArray;
     },
 
-    canMove: function(stateofthegame, pion) {
+    canMove: function (stateofthegame, pion) {
         /*
             Conditions pour savoir si une piece peut bouger
             Si 0 ou 6 : check 3 et +1
@@ -296,7 +296,7 @@ JDM.Ia = {
         return positionsAvailable;
     },
 	
-	findMills: function(stateofthegame) {
+	findMills: function (stateofthegame) {
 	
 		var mills = [];
 		for (var i = 0; i < 3; i++) {
@@ -454,6 +454,139 @@ JDM.Ia = {
 	
 	mapScore: function (stateofthegame) {
 		var mills = findMills(stateofthegame);
+		var numberOfIaMills = 0;
+		var numberOfHumanMills = 0;
+		
+		for (var i = 0, l = mills.length; i < l; i++) {
+			if (mills[i].player == 1) {
+				numberOfHumanMills += 1;
+			}
+			else if (mills[i].player == 2 {
+				numberOfIaMills += 1;
+			}
+		}
+		
+		var iaPieces = countPieces(stateofthegame, 2);
+		var humanPieces = countPieces(stateofthegame, 1);
+		var iaFixedPieces = 0;
+		var humanFixedPieces = 0;
+		var iaAdjPieces = 0;
+		var humanAdjPieces = 0;
+		for (var i = 0, l = iaPieces.length; i < l; i++) {
+			//regarder les pieces bloquees (fixed) et le nombre de pieces adjacentes
+			var isMovable = canMove(stateofthegame, iaPieces[i]);
+			if (isMovable.length == 0) {
+				iaFixedPieces += 1
+			}
+			for (var j = 0, k = iaPieces.length; j < k; j++) {
+				if (j != i) {
+					if (pieceNextTo(iaPieces[i], iaPieces[j])) {
+						iaAdjPieces += 1;
+					}
+				}
+			}
+		}
+		
+		for (var i = 0; l = humanPieces.length; i < l; i++) {
+			var isMovable = canMove(stateofthegame, humanPieces[i]);
+			if (isMovable.length == 0) {
+				humanFixedPieces += 1
+			}
+			for (var j = 0, k = humanPieces.length; j < k; j++) {
+				if (j != i) {
+					if (pieceNextTo(humanPieces[i], humanPieces[j])) {
+						humanAdjPieces += 1;
+					}
+				}
+			}
+		}
+	},
+	
+	countPieces: function (stateofthegame, color) {
+        var piecesArray = [];
+        for (var i = 0; i < 3; i++){
+            for (var j = 0; j < 9; j++) {
+                if (stateofthegame[i][j] == color) {
+                    myPion = new this.Pion(i, j);
+                    piecesArray.push(pieceAvailableToMove);    
+                }
+            }
+        }
+	
+		return piecesArray;	
+	},
+	
+	pieceNextTo: function (pion1, pion2) {
+		if (pion1.j % 2 == 0) {
+			if (pion1.i == pion2.i) {
+				if (pion1.j == 0) {
+					if (pion2.j == 1 || pion2.j == 3) {
+						return true;
+					}
+				}
+				else if (pion1.j == 2) {
+					if (pion2.j == 1 || pion2.j == 5) {
+						return true;
+					}
+				}
+				else if (pion1.j == 6) {
+					if (pion2.j == 3 || pion2.j == 7) {
+						return true;
+					}
+				}
+				else if (pion1.j == 8) {
+					if (pion2.j == 5 || pion2.j == 7) {
+						return true;
+					}
+				}
+				
+				return false;
+			}
+			
+			return false;
+		}
+		else {
+			if (pion1.i == pion2.i) {
+				if (pion1.j == 1) {
+					if (pion2.j == 0 || pion2.j == 2) {
+						return true;
+					}
+				}
+				else if (pion1.j == 3) {
+					if (pion2.j == 0 || pion2.j == 6) {
+						return true;
+					}
+				}
+				else if (pion1.j == 5) {
+					if (pion2.j == 2 || pion2.j == 8) {
+						return true;
+					}
+				}
+				else if (pion1.j == 7) {
+					if (pion2.j == 6 || pion2.j == 8) {
+						return true;
+					}
+				}
+				
+				return false;
+			}
+			else if (pion1.i == 0 || pion1.i == 2) {
+				if (pion2.i == 1 && pion1.j == pion2.j) {
+					return true;
+				}
+				
+				return false;
+			}
+			else if (pion1.i == 1) {
+				if ((pion2.i == 0 || pion2.i == 2) && pion1.j == pion2.j) {
+					return true;
+				}
+				
+				return false;
+			}
+			
+			return false;
+		}
 	},
 }
 
