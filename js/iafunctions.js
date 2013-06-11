@@ -43,7 +43,7 @@ JDM.Ia = {
     max: function(gameCopy, depth) {
 
         if (depth == 0) {
-            return this.eval(gameCopy);
+            return this.evaluation(gameCopy);
         }
 
         var max = -10000;
@@ -75,7 +75,7 @@ JDM.Ia = {
     min: function(gameCopy, depth) {
 
         if (depth == 0) {
-            return this.eval(gameCopy);
+            return this.evaluation(gameCopy);
         }
 
         var min = 10000;
@@ -101,7 +101,7 @@ JDM.Ia = {
         return min;
     },
 
-    eval: function(gameCopy) {
+    evaluation: function(gameCopy) {
 
         var score = 0;
 
