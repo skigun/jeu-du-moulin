@@ -94,5 +94,6 @@ JDM.Board = {
                 JDM.Piece.prototype.draw(position, value);
             }
         });
+		JDM.update = true;
     }
 };

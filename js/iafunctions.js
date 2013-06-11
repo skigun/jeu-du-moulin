@@ -183,19 +183,20 @@ JDM.Ia = {
     nextMoves: function (stateofthegame, nextplayer) {
         var newBoards = [];
         var piecesPositionArray = this.findAllPieces(stateofthegame, nextplayer);
+		var newSofg = stateofthegame;
         for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
             //recopier l'etat de jeu actuel, et effectuer les changements
             var posIpion = piecesPositionArray[i][0].i;
             var posJpion = piecesPositionArray[i][0].j;
-
+		
             for (var j = 0, k = piecesPositionArray[i][1].length; j < k; j++) {
                 var newIPos =  piecesPositionArray[i][1][j].i;
                 var newJPos = piecesPositionArray[i][1][j].j;
-                var newSofg = stateofthegame;
+				newSofg = stateofthegame;
                 newSofg[posIpion][posJpion] = 0;
                 newSofg[newIPos][newJPos] = nextplayer;
                 newBoards.push(newSofg);
-            }
+				}
         }
 
         return newBoards;
@@ -606,7 +607,12 @@ JDM.Ia = {
 		var tab2 = [2,1,2,1,null,1,1,2,0];
 		var tab3 = [0,2,0,2,null,2,0,0,0];
 		stateofthegame = [tab1, tab2, tab3];
+		JDM.Board.drawGame(stateofthegame);
 		var next = this.nextMoves(stateofthegame, 2);
+		//JDM.Board.drawGame(next[0]);
+		//for (var i = 0, l = next.length; i < l; i++) {
+			
+	//	}
 		console.log(next);
 	},
 }
