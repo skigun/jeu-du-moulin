@@ -11,8 +11,7 @@ JDM.Ia = {
 	},
 
     gameCopy: null,
-    maxi: 0,
-    maxj: 0,
+    bestMove: [],
 	existingMills: [],
 	bestNextSotg: [],
 
@@ -22,11 +21,14 @@ JDM.Ia = {
         this.minMax(JDM.Board.positions, 2);
 
         // on met à jour la position du best move
-        JDM.Board.positions[this.maxi][this.maxj] = 2;
+        JDM.Board.positions[this.bestMove.i][this.bestMove.j] = 2;
 
         // on déplace la pièce sur cette position
-        var newPosition = JDM.Board.arrayTranslatePositionToPixel[this.maxi][this.maxj];
+        var newPosition = JDM.Board.arrayTranslatePositionToPixel[this.bestMove.i][this.bestMove.j];
         var selectedPiece = JDM.Board.iaPieces.shift();
+
+        // on met à zero le tableau
+        this.bestMove = [];
 
         JDM.Map.mapContainer.removeChild(selectedPiece);
         JDM.Piece.prototype.draw(newPosition, 2);
@@ -60,8 +62,7 @@ JDM.Ia = {
                     if (tmp > max) {
 
                         max = tmp;
-                        this.maxi = i;
-                        this.maxj = j;
+                        this.bestMove = ({i: i, j: j, score: tmp});
                     }
 
                     gameCopy[i][j] = 0;
