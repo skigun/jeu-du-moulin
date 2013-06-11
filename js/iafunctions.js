@@ -389,7 +389,7 @@ JDM.Ia = {
 		var result = false;
 		
 		for (var i = 0, l = existingMills.length; i < l ; i++) {
-			if (pionEquals(existingMills[i].pion1, mill.pion1) && pionEquals(existingMills[i].pion2, mill.pion2) && pionEquals(existingMills[i].pion3, mill.pion3)) {
+			if (this.pionEquals(existingMills[i].pion1, mill.pion1) && this.pionEquals(existingMills[i].pion2, mill.pion2) && this.pionEquals(existingMills[i].pion3, mill.pion3)) {
 				return true;
 			}
 		}
@@ -408,7 +408,7 @@ JDM.Ia = {
 
 	bestNextMove: function (stateofthegame, player) {
 		bestNextSotg = [];
-		maxPhase2(stateofthegame, 4);
+		this.maxPhase2(stateofthegame, 4);
 		var i = Math.random() * 10;
 		return bestNextSotg[i];
 	},
@@ -420,7 +420,7 @@ JDM.Ia = {
 
         var max = -10000;
         var tmp;
-		var possibleSotg = nextMoves(stateofthegame, 2)
+		var possibleSotg = this.nextMoves(stateofthegame, 2)
 
 		for (var i = 0, l = possibleSotg.length; i < l; i++) {
 			tmp = this.minPhase2(possibleSotg[i], depth - 1);
@@ -440,7 +440,7 @@ JDM.Ia = {
 
         var min = 10000;
         var tmp;
-		var possibleSotg = nextMoves(stateofthegame, 1)
+		var possibleSotg = this.nextMoves(stateofthegame, 1)
 
 		for (var i = 0, l = possibleSotg.length; i < l; i++) {
 			tmp = this.maxPhase2(possibleSotg[i], depth - 1);
@@ -462,40 +462,40 @@ JDM.Ia = {
 			if (mills[i].player == 1) {
 				numberOfHumanMills += 1;
 			}
-			else if (mills[i].player == 2 {
+			else if (mills[i].player == 2) {
 				numberOfIaMills += 1;
 			}
 		}
 		
-		var iaPieces = countPieces(stateofthegame, 2);
-		var humanPieces = countPieces(stateofthegame, 1);
+		var iaPieces = this.countPieces(stateofthegame, 2);
+		var humanPieces = this.countPieces(stateofthegame, 1);
 		var iaFixedPieces = 0;
 		var humanFixedPieces = 0;
 		var iaAdjPieces = 0;
 		var humanAdjPieces = 0;
 		for (var i = 0, l = iaPieces.length; i < l; i++) {
 			//regarder les pieces bloquees (fixed) et le nombre de pieces adjacentes
-			var isMovable = canMove(stateofthegame, iaPieces[i]);
+			var isMovable = this.canMove(stateofthegame, iaPieces[i]);
 			if (isMovable.length == 0) {
 				iaFixedPieces += 1
 			}
 			for (var j = 0, k = iaPieces.length; j < k; j++) {
 				if (j != i) {
-					if (pieceNextTo(iaPieces[i], iaPieces[j])) {
+					if (this.pieceNextTo(iaPieces[i], iaPieces[j])) {
 						iaAdjPieces += 1;
 					}
 				}
 			}
 		}
 		
-		for (var i = 0; l = humanPieces.length; i < l; i++) {
-			var isMovable = canMove(stateofthegame, humanPieces[i]);
+		for (var i = 0, l = humanPieces.length; i < l; i++) {
+			var isMovable = this.canMove(stateofthegame, humanPieces[i]);
 			if (isMovable.length == 0) {
 				humanFixedPieces += 1
 			}
 			for (var j = 0, k = humanPieces.length; j < k; j++) {
 				if (j != i) {
-					if (pieceNextTo(humanPieces[i], humanPieces[j])) {
+					if (this.pieceNextTo(humanPieces[i], humanPieces[j])) {
 						humanAdjPieces += 1;
 					}
 				}
@@ -597,6 +597,13 @@ JDM.Ia = {
 			
 			return false;
 		}
+	},
+	
+	testFunction: function() {
+		var stateofthegame = [];
+		var tab1 = [0,0,0,0,null,0,0,0,0];
+		var tab2 = [0,0,0,0,null,0,0,0,0];
+		var tab3 = [0,0,0,0,null,0,0,0,0];
 	},
 }
 
