@@ -9,7 +9,7 @@ JDM.Ia = {
 		this.pion3 = pion3;
 		this.player = player;
 	},
-
+	
     gameCopy: null,
     bestMove: [],
 	existingMills: [],
@@ -183,7 +183,6 @@ JDM.Ia = {
     nextMoves: function (stateofthegame, nextplayer) {
         var newBoards = [];
         var piecesPositionArray = this.findAllPieces(stateofthegame, nextplayer);
-		var newSofg = stateofthegame;
         for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
             //recopier l'etat de jeu actuel, et effectuer les changements
             var posIpion = piecesPositionArray[i][0].i;
@@ -192,7 +191,8 @@ JDM.Ia = {
             for (var j = 0, k = piecesPositionArray[i][1].length; j < k; j++) {
                 var newIPos =  piecesPositionArray[i][1][j].i;
                 var newJPos = piecesPositionArray[i][1][j].j;
-				newSofg = stateofthegame;
+				var newSofg = [];
+				newSofg = JSON.parse(JSON.stringify(stateofthegame));
                 newSofg[posIpion][posJpion] = 0;
                 newSofg[newIPos][newJPos] = nextplayer;
 				console.log(posIpion + ' ' + posJpion + ' = 0');
@@ -200,7 +200,6 @@ JDM.Ia = {
                 newBoards.push(newSofg);
 			}
         }
-
         return newBoards;
     },
 
@@ -608,13 +607,14 @@ JDM.Ia = {
 		var tab1 = [1,2,1,1,null,1,2,1,2];
 		var tab2 = [2,1,2,1,null,1,1,2,0];
 		var tab3 = [0,2,0,2,null,2,0,0,0];
+		JDM.Board.positions = [tab1, tab2, tab3];
 		stateofthegame = [tab1, tab2, tab3];
 		JDM.Board.drawGame(stateofthegame);
 		var next = this.nextMoves(stateofthegame, 2);
 		//JDM.Board.drawGame(next[0]);
-		//for (var i = 0, l = next.length; i < l; i++) {
-			
-	//	}
+		for (var i = 0, l = next.length; i < l; i++) {
+			JDM.Board.drawGame(next[i]);
+		}
 		console.log(next);
 	},
 }

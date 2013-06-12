@@ -23,7 +23,8 @@ JDM.Piece.prototype = {
             shape.graphics.drawCircle(position.x, position.y, 20);
         }
 
-        JDM.Map.mapContainer.addChild(shape);
+        //JDM.Map.mapContainer.addChild(shape);
+		JDM.Board.piecesContainer.addChild(shape);
 
         // on set les events seulement au joueur humain
         if (player == 1) {
@@ -59,7 +60,8 @@ JDM.Piece.prototype = {
                         if (JDM.Board.positions[newPosition.tab][newPosition.num] == 0) {
                             JDM.Board.positions[newPosition.tab][newPosition.num] = player;
 
-                            JDM.Map.mapContainer.removeChild(shape);
+                            //JDM.Map.mapContainer.removeChild(shape);
+							JDM.Board.piecesContainer.removeChild(shape)
                             JDM.Piece.prototype.draw(newPosition, player);
 
                             // au tour de l'IA

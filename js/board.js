@@ -22,7 +22,7 @@ JDM.Board = {
 
         this.addPieces();
 
-        this.piecesContainer.y = 25;
+        //this.piecesContainer.y = 25;
         JDM.stage.addChild(this.piecesContainer);
     },
 
@@ -89,6 +89,7 @@ JDM.Board = {
     },
 
     drawGame: function(stateofthegame) {
+		this.piecesContainer.removeAllChildren();
         this.forEachPieces(stateofthegame, function(value, position) {
             if(value != 0) {
                 JDM.Piece.prototype.draw(position, value);
