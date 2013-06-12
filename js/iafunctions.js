@@ -380,7 +380,7 @@ JDM.Ia = {
             mill = new this.Mill(new this.Pion(0, 5), new this.Pion(1, 5), new this.Pion(2, 5), 2);
 			mills.push(mill)
         } 
-		else if (gameCopy[0][5] == 1 && gameCopy[1][5] == 1 && gameCopy[2][5] == 1){
+		else if (stateofthegame[0][5] == 1 && stateofthegame[1][5] == 1 && stateofthegame[2][5] == 1){
             mill = new this.Mill(new this.Pion(0, 5), new this.Pion(1, 5), new this.Pion(2, 5), 1);
 			mills.push(mill)
         }
@@ -410,10 +410,11 @@ JDM.Ia = {
 	},
 
 	bestNextMove: function (stateofthegame, player) {
-		bestNextSotg = [];
-		this.maxPhase2(stateofthegame, 4);
-		var i = Math.random() * 10;
-		return bestNextSotg[i];
+		this.maxPhase2(stateofthegame, 2);
+
+        var bestRandomSotg = this.bestNextSotg[Math.floor(Math.random()*this.bestNextSotg.length)];
+
+		return bestRandomSotg;
 	},
 	
 	maxPhase2: function (stateofthegame, depth) {
@@ -429,7 +430,7 @@ JDM.Ia = {
 			tmp = this.minPhase2(possibleSotg[i], depth - 1);
 			if (tmp >= max) {
 				max = tmp;
-				bestNextSotg.push(possibleSotg[i]);
+				this.bestNextSotg.push(possibleSotg[i]);
 			}
 		}
                 
@@ -456,7 +457,7 @@ JDM.Ia = {
 	},
 	
 	mapScore: function (stateofthegame) {
-		var mills = findMills(stateofthegame);
+		var mills = this.findMills(stateofthegame);
 		var score = 0;
 		var numberOfIaMills = 0;
 		var numberOfHumanMills = 0;
@@ -521,7 +522,7 @@ JDM.Ia = {
             for (var j = 0; j < 9; j++) {
                 if (stateofthegame[i][j] == color) {
                     myPion = new this.Pion(i, j);
-                    piecesArray.push(pieceAvailableToMove);    
+                    piecesArray.push(myPion);
                 }
             }
         }
@@ -603,19 +604,20 @@ JDM.Ia = {
 	},
 	
 	testFunction: function() {
-		var stateofthegame = [];
 		var tab1 = [1,2,1,1,null,1,2,1,2];
 		var tab2 = [2,1,2,1,null,1,1,2,0];
 		var tab3 = [0,2,0,2,null,2,0,0,0];
-		JDM.Board.positions = [tab1, tab2, tab3];
-		stateofthegame = [tab1, tab2, tab3];
+		var stateofthegame = JDM.Board.positions = [tab1, tab2, tab3];
+
 		JDM.Board.drawGame(stateofthegame);
-		var next = this.nextMoves(stateofthegame, 2);
-		//JDM.Board.drawGame(next[0]);
-		for (var i = 0, l = next.length; i < l; i++) {
-			JDM.Board.drawGame(next[i]);
-		}
-		console.log(next);
-	},
+		var bestNextMove = this.bestNextMove(stateofthegame)
+
+        console.log(bestNextMove)
+
+        setTimeout(function(){
+            JDM.Board.drawGame(bestNextMove);
+
+        }, 3000);
+    }
 }
 
