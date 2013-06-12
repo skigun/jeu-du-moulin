@@ -195,8 +195,10 @@ JDM.Ia = {
 				newSofg = stateofthegame;
                 newSofg[posIpion][posJpion] = 0;
                 newSofg[newIPos][newJPos] = nextplayer;
+				console.log(posIpion + ' ' + posJpion + ' = 0');
+                console.log(newIPos + ' ' + newJPos + ' = ' + nextplayer);
                 newBoards.push(newSofg);
-				}
+			}
         }
 
         return newBoards;
