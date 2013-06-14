@@ -32,9 +32,9 @@ JDM.Piece.prototype = {
         }
         if (player == 2) {
             JDM.Board.iaPieces.push(shape);
+            this.setIaEvent(shape, player, position);
         }
     },
-
 
     setEvent: function(shape, player, position) {
         shape.onPress = function(e) {
@@ -53,7 +53,7 @@ JDM.Piece.prototype = {
                 console.log('nouvelle position : ', newPosition)
 
                 // placing pieces
-                if (JDM.step == 0) {
+                if (JDM.step == 0 && JDM.turn == 1) {
                     if (newPosition && position.tab == null && position.num == null) {
 
                         // si le nouvel emplacement n'est pas pris on peut placer son pion.
@@ -61,17 +61,27 @@ JDM.Piece.prototype = {
                             JDM.Board.positions[newPosition.tab][newPosition.num] = player;
 
                             //JDM.Map.mapContainer.removeChild(shape);
-							JDM.Board.piecesContainer.removeChild(shape)
+                            JDM.Board.piecesContainer.removeChild(shape);
                             JDM.Piece.prototype.draw(newPosition, player);
 
-                            // au tour de l'IA
-                            JDM.Ia.placePieces();
+                            // on check les moulins
+                            var mills = JDM.Ia.findMills(JDM.Board.positions);
 
-                            // on décremente le nombre de pieces à poser
-                            JDM.piecesToPlace -= 1;
+                            for (var i = 0, l = mills.length; i < l ; i++) {
+                                if(!JDM.Ia.isExistingMill(mills[i])) {
+                                    if (mills[i].player == 1) {
 
-                            if(JDM.piecesToPlace == 0) {
-                                JDM.step = 1;
+                                       JDM.delete = true;
+                                    }
+                                }
+                            }
+
+                            if (JDM.delete) {
+                                // on met a jour le tableau des mills existant
+                                JDM.Ia.existingMills = mills;
+
+                            } else {
+                                JDM.turn = 2;
                             }
                         }
                     }
@@ -93,5 +103,24 @@ JDM.Piece.prototype = {
                 }
             };
         };
+    },
+
+    setIaEvent: function(shape, player, position) {
+
+        shape.onClick = function(e) {
+            // si c'est le tour du joueur 1, et qu'il est en phase de delete, il peut effacer la piece IA
+            if (JDM.turn == 1 && JDM.delete) {
+                console.log('piece deleted');
+
+                var newPosition = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
+                JDM.Board.positions[newPosition.tab][newPosition.num] = 0;
+                JDM.Board.piecesContainer.removeChild(shape);
+
+                JDM.update = true;
+
+                JDM.delete = false;
+                JDM.turn = 2;
+            }
+        }
     }
 };

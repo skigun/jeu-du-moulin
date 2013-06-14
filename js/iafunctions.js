@@ -3,6 +3,7 @@ JDM.Ia = {
         this.i = tableau;
         this.j = indice;
     },
+    
 	Mill: function (pion1, pion2, pion3, player) {
 		this.pion1 = pion1;
 		this.pion2 = pion2;
@@ -15,7 +16,22 @@ JDM.Ia = {
 	existingMills: [],
 	bestNextSotg: [],
 
-    placePieces: function () {
+    iaPlay: function() {
+        if (JDM.step == 0 && JDM.turn == 2) {
+            this.placePieces();
+
+            JDM.turn = 1;
+
+            // on décremente le nombre de pieces à poser
+            JDM.piecesToPlace -= 1;
+
+            if(JDM.piecesToPlace == 0) {
+                JDM.step = 1;
+            }
+        }
+    },
+
+    placePieces: function() {
 
         // minMax calcule le best move (maxi, maxj) de profondeur 2 (il ne va calculer qu'un coup à l'avance)
         this.minMax(JDM.Board.positions, 2);
@@ -25,12 +41,13 @@ JDM.Ia = {
 
         // on déplace la pièce sur cette position
         var newPosition = JDM.Board.arrayTranslatePositionToPixel[this.bestMove.i][this.bestMove.j];
+
         var selectedPiece = JDM.Board.iaPieces.shift();
 
         // on met à zero le tableau
         this.bestMove = [];
 
-        JDM.Map.mapContainer.removeChild(selectedPiece);
+        JDM.Board.piecesContainer.removeChild(selectedPiece);
         JDM.Piece.prototype.draw(newPosition, 2);
     },
 
@@ -391,8 +408,8 @@ JDM.Ia = {
 	isExistingMill: function (mill) {
 		var result = false;
 		
-		for (var i = 0, l = existingMills.length; i < l ; i++) {
-			if (this.pionEquals(existingMills[i].pion1, mill.pion1) && this.pionEquals(existingMills[i].pion2, mill.pion2) && this.pionEquals(existingMills[i].pion3, mill.pion3)) {
+		for (var i = 0, l = this.existingMills.length; i < l ; i++) {
+			if (this.pionEquals(this.existingMills[i].pion1, mill.pion1) && this.pionEquals(this.existingMills[i].pion2, mill.pion2) && this.pionEquals(this.existingMills[i].pion3, mill.pion3)) {
 				return true;
 			}
 		}
@@ -410,7 +427,7 @@ JDM.Ia = {
 	},
 
 	bestNextMove: function (stateofthegame, player) {
-		this.maxPhase2(stateofthegame, 2);
+		this.maxPhase2(stateofthegame, 4);
 
         var bestRandomSotg = this.bestNextSotg[Math.floor(Math.random()*this.bestNextSotg.length)];
 
@@ -430,7 +447,9 @@ JDM.Ia = {
 			tmp = this.minPhase2(possibleSotg[i], depth - 1);
 			if (tmp >= max) {
 				max = tmp;
-				this.bestNextSotg.push(possibleSotg[i]);
+                if (depth == 4) {
+				    this.bestNextSotg.push(possibleSotg[i]);
+                }
 			}
 		}
                 
@@ -610,11 +629,11 @@ JDM.Ia = {
 		var stateofthegame = JDM.Board.positions = [tab1, tab2, tab3];
 
 		JDM.Board.drawGame(stateofthegame);
-		var bestNextMove = this.bestNextMove(stateofthegame)
+		var bestNextMove = this.bestNextMove(stateofthegame);
 
-        console.log(bestNextMove)
+        console.log(bestNextMove);
 
-        setTimeout(function(){
+        setTimeout(function() {
             JDM.Board.drawGame(bestNextMove);
 
         }, 3000);

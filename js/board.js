@@ -89,8 +89,10 @@ JDM.Board = {
     },
 
     drawGame: function(stateofthegame) {
+        var game = typeof stateofthegame !== 'undefined' ? stateofthegame : JDM.Board.positions;
+
 		this.piecesContainer.removeAllChildren();
-        this.forEachPieces(stateofthegame, function(value, position) {
+        this.forEachPieces(game, function(value, position) {
             if(value != 0) {
                 JDM.Piece.prototype.draw(position, value);
             }
