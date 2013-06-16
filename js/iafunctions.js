@@ -14,25 +14,86 @@ JDM.Ia = {
     gameCopy: null,
     bestMove: [],
 	existingMills: [],
-	bestNextSotg: [],
+	bestNextSotg: null,
 
     iaPlay: function() {
-        if (JDM.step == 0 && JDM.turn == 2) {
-            this.placePieces();
+        console.log('IA play')
+        if (JDM.step == 1 && JDM.turn == 2 && !JDM.delete) {
 
-            JDM.turn = 1;
+            console.log('IA place')
+            this.placePieces(function() {
+                console.log('hey')
+                // on décremente le nombre de pieces à poser
+                var mills = JDM.Ia.findMills(JDM.Board.positions);
 
-            // on décremente le nombre de pieces à poser
-            JDM.piecesToPlace -= 1;
+                JDM.Ia.checkMills(mills, 2);
 
-            if(JDM.piecesToPlace == 0) {
-                JDM.step = 1;
-            }
+                if (JDM.delete) {
+                    JDM.Ia.deletePieces();
+                } else {
+                    JDM.turn = 1;
+                    console.log('turn', JDM.turn)
+                }
+
+                JDM.piecesToPlace -= 1;
+
+                if(JDM.piecesToPlace == 0) {
+                    JDM.step = 2;
+                    JDM.turn = 1;
+                    console.log('step', JDM.step, 'turn', JDM.turn, 'delete', JDM.delete)
+                }
+            });
+        }
+
+        if (JDM.step == 2 && JDM.turn == 2 && !JDM.delete) {
+
+            console.log('IA move')
+
+            this.movePiece(function() {
+
+                var mills = JDM.Ia.findMills(JDM.Board.positions);
+
+                JDM.Ia.checkMills(mills, 2);
+
+                if (JDM.delete) {
+                    JDM.Ia.deletePieces();
+                } else {
+                    JDM.turn = 1;
+                }
+            });
         }
     },
 
-    placePieces: function() {
+    movePiece: function(callback) {
+        JDM.Board.positions = this.bestNextMove(JDM.Board.positions);
 
+        setTimeout(function() {
+            JDM.Board.drawGame();
+            callback();
+        }, 1000);
+    },
+
+    deletePieces: function() {
+        console.log('IA delete')
+        if (JDM.turn == 2 && JDM.delete) {
+            var gameCopy = JDM.Board.positions;
+
+            this.maxDelete(gameCopy, 1);
+
+            JDM.Board.positions[this.bestMove.i][this.bestMove.j] = 0;
+
+            setTimeout(function() {
+                JDM.Board.drawGame();
+            }, 1000);
+
+            JDM.turn = 1;
+            JDM.delete = false;
+
+            console.log('step', JDM.step, 'turn', JDM.turn, 'delete', JDM.delete)
+        }
+    },
+
+    placePieces: function(callback) {
         // minMax calcule le best move (maxi, maxj) de profondeur 2 (il ne va calculer qu'un coup à l'avance)
         this.minMax(JDM.Board.positions, 2);
 
@@ -47,8 +108,70 @@ JDM.Ia = {
         // on met à zero le tableau
         this.bestMove = [];
 
-        JDM.Board.piecesContainer.removeChild(selectedPiece);
-        JDM.Piece.prototype.draw(newPosition, 2);
+        JDM.Board.piecesToPlaceContainer.removeChild(selectedPiece);
+
+        setTimeout(function() {
+            JDM.Board.drawGame();
+            callback();
+        }, 1000);
+    },
+
+    isPieceInMills: function(currentPiece, player) {
+
+        // si le pion courrant ne fait pas parti d'un moulin, on peut l'effacer
+        for (var k = 0, l = this.existingMills.length; k < l ; k++) {
+
+            if (this.existingMills[k].player == player) {
+                // si le pion testé fait parti d'un moulin
+                if (this.pionEquals(this.existingMills[k].pion1, currentPiece) || this.pionEquals(this.existingMills[k].pion2, currentPiece) || this.pionEquals(this.existingMills[k].pion3, currentPiece)) {
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    },
+
+    maxDelete: function(gameCopy, depth) {
+        var max = -10000;
+        var tmp;
+
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 9; j++) {
+
+                // Le joueur 2 (IA) efface une piece du joueur 1
+                if (gameCopy[i][j] == 1 && j != 4) {
+
+                    var currentPiece = new this.Pion(i, j);
+                    // si le pion courrant ne fait pas parti d'un moulin, on peut l'effacer
+
+                    if (!this.isPieceInMills(currentPiece, 1)) {
+                       // console.log('current piece', currentPiece);
+
+                        gameCopy[i][j] = 0;
+
+                        tmp = this.minDelete(gameCopy, depth - 1);
+
+                        if (tmp > max) {
+
+                            max = tmp;
+                            this.bestMove = ({i: i, j: j, score: tmp});
+                        }
+
+                        gameCopy[i][j] = 1;
+                    }
+                }
+            }
+        }
+
+        return max;
+    },
+
+    minDelete: function(gameCopy, depth) {
+        if (depth == 0) {
+            return this.mapScore(gameCopy);
+        }
     },
 
     minMax: function (game, depth) {
@@ -60,7 +183,6 @@ JDM.Ia = {
     },
 
     max: function(gameCopy, depth) {
-
         if (depth == 0) {
             return this.evaluation(gameCopy);
         }
@@ -68,7 +190,7 @@ JDM.Ia = {
         var max = -10000;
         var tmp;
 
-        for (var i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++) {
             for (var j = 0; j < 9; j++) {
                 if (gameCopy[i][j] == 0 && j != 4) {
 
@@ -90,8 +212,7 @@ JDM.Ia = {
         return max;
     },
 
-    min: function (gameCopy, depth) {
-
+    min: function(gameCopy, depth) {
         if (depth == 0) {
             return this.evaluation(gameCopy);
         }
@@ -120,14 +241,13 @@ JDM.Ia = {
     },
 
     evaluation: function (gameCopy) {
-
         var score = 0;
 
         for (var i = 0; i < 3; i++) {
 
             // moulin horizontal haut
             if (gameCopy[i][0] == 2 && gameCopy[i][1] == 2 && gameCopy[i][2] == 2) {
-                console.log("moulin horizontal haut")
+                // console.log("moulin horizontal haut")
                 score += 20;
             }
             else if (gameCopy[i][0] == 1 && gameCopy[i][1] == 1 && gameCopy[i][2] == 1) {
@@ -136,7 +256,7 @@ JDM.Ia = {
 
             // moulin horizontal bas
             if (gameCopy[i][6] == 2 && gameCopy[i][7] == 2 && gameCopy[i][8] == 2) {
-                console.log("moulin horizontal bas")
+                // console.log("moulin horizontal bas")
                 score += 20;
             }
             else if (gameCopy[i][6] == 1 && gameCopy[i][7] == 1 && gameCopy[i][8] == 1) {
@@ -145,7 +265,7 @@ JDM.Ia = {
 
             // moulin vertical gauche
             if (gameCopy[i][0] == 2 && gameCopy[i][3] == 2 && gameCopy[i][6] == 2) {
-                console.log("moulin vertical gauche")
+                // console.log("moulin vertical gauche")
                 score += 20;
             }
             else if (gameCopy[i][0] == 1 && gameCopy[i][3] == 1 && gameCopy[i][6] == 1) {
@@ -154,7 +274,7 @@ JDM.Ia = {
 
             // moulin vertical droite
             if (gameCopy[i][2] == 2 && gameCopy[i][5] == 2 && gameCopy[i][8] == 2) {
-                console.log("moulin vertical droite")
+                // console.log("moulin vertical droite")
                 score += 20;
             }
             else if (gameCopy[i][2] == 1 && gameCopy[i][5] == 1 && gameCopy[i][8] == 1) {
@@ -164,7 +284,7 @@ JDM.Ia = {
 
         // Moulin vertical haut
         if (gameCopy[0][1] == 2 && gameCopy[1][1] == 2 && gameCopy[2][1] == 2){
-            console.log('moulin vertical haut')
+            // console.log('moulin vertical haut')
             score += 20;
         } else if (gameCopy[0][1] == 1 && gameCopy[1][1] == 1 && gameCopy[2][1] == 1){
             score -= 20;
@@ -172,7 +292,7 @@ JDM.Ia = {
 
          // Moulin vertical bas
         if (gameCopy[0][7] == 2 && gameCopy[1][7] == 2 && gameCopy[2][7] == 2){
-            console.log('moulin vertical bas')
+            // console.log('moulin vertical bas')
             score += 20;
         } else if (gameCopy[0][7] == 1 && gameCopy[1][7] == 1 && gameCopy[2][7] == 1){
             score -= 20;
@@ -180,7 +300,7 @@ JDM.Ia = {
 
         // Moulin horizontal gauche
         if (gameCopy[0][3] == 2 && gameCopy[1][3] == 2 && gameCopy[2][3] == 2){
-            console.log('moulin horizontal gauche')
+            // console.log('moulin horizontal gauche')
             score += 20;
         } else if (gameCopy[0][3] == 1 && gameCopy[1][3] == 1 && gameCopy[2][3] == 1){
             score -= 20;
@@ -188,7 +308,7 @@ JDM.Ia = {
 
         // Moulin horizontal droite
         if (gameCopy[0][5] == 2 && gameCopy[1][5] == 2 && gameCopy[2][5] == 2){
-            console.log('moulin horizontal droite')
+            // console.log('moulin horizontal droite')
             score += 20;
         } else  if (gameCopy[0][5] == 1 && gameCopy[1][5] == 1 && gameCopy[2][5] == 1){
             score -= 20;
@@ -212,8 +332,8 @@ JDM.Ia = {
 				newSofg = JSON.parse(JSON.stringify(stateofthegame));
                 newSofg[posIpion][posJpion] = 0;
                 newSofg[newIPos][newJPos] = nextplayer;
-				console.log(posIpion + ' ' + posJpion + ' = 0');
-                console.log(newIPos + ' ' + newJPos + ' = ' + nextplayer);
+				//console.log(posIpion + ' ' + posJpion + ' = 0');
+                //console.log(newIPos + ' ' + newJPos + ' = ' + nextplayer);
                 newBoards.push(newSofg);
 			}
         }
@@ -416,6 +536,20 @@ JDM.Ia = {
 		
 		return result;
 	},
+
+    checkMills: function(mills, player) {
+        // on check les moulins
+        for (var i = 0, l = mills.length; i < l ; i++) {
+            if(!this.isExistingMill(mills[i])) {
+                if (mills[i].player == player) {
+                    // on met la phase du jeu => delete
+                    JDM.delete = true;
+                }
+            }
+        }
+        // on met a jour le tableau des mills existant
+        this.existingMills = mills;
+    },
 	
 	pionEquals: function (pion1, pion2) {
 		if (pion1.i == pion2.i && pion1.j == pion2.j) {
@@ -426,12 +560,10 @@ JDM.Ia = {
 		}
 	},
 
-	bestNextMove: function (stateofthegame, player) {
+	bestNextMove: function (stateofthegame) {
 		this.maxPhase2(stateofthegame, 4);
 
-        var bestRandomSotg = this.bestNextSotg[Math.floor(Math.random()*this.bestNextSotg.length)];
-
-		return bestRandomSotg;
+		return this.bestNextSotg;
 	},
 	
 	maxPhase2: function (stateofthegame, depth) {
@@ -445,10 +577,10 @@ JDM.Ia = {
 
 		for (var i = 0, l = possibleSotg.length; i < l; i++) {
 			tmp = this.minPhase2(possibleSotg[i], depth - 1);
-			if (tmp >= max) {
+			if (tmp > max) {
 				max = tmp;
                 if (depth == 4) {
-				    this.bestNextSotg.push(possibleSotg[i]);
+				    this.bestNextSotg = possibleSotg[i];
                 }
 			}
 		}
@@ -527,8 +659,8 @@ JDM.Ia = {
 		
 		score += (numberOfIaMills * 50);
 		score -= (numberOfHumanMills * 50);
-		score += (iaFixedPieces * 15);
-		score -= (humanFixedPieces * 15);
+		score -= (iaFixedPieces * 15);
+		score += (humanFixedPieces * 15);
 		score += (iaAdjPieces * 8);
 		score -= (humanAdjPieces * 8);
 		

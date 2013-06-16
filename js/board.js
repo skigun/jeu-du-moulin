@@ -2,6 +2,7 @@ JDM.Board = {
     positions: [],
     iaPieces: [],
     piecesContainer: new createjs.Container(),
+    piecesToPlaceContainer: new createjs.Container(),
     arrayTranslatePositionToPixel: [],
 
     setPositions: function() {
@@ -24,6 +25,9 @@ JDM.Board = {
 
         //this.piecesContainer.y = 25;
         JDM.stage.addChild(this.piecesContainer);
+        JDM.stage.addChild(this.piecesToPlaceContainer);
+
+        JDM.step = 1;
     },
 
     translatePositionToPixel: function(position) {
@@ -97,6 +101,7 @@ JDM.Board = {
                 JDM.Piece.prototype.draw(position, value);
             }
         });
+
 		JDM.update = true;
     }
 };
