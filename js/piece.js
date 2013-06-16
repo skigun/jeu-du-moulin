@@ -54,6 +54,8 @@ JDM.Piece.prototype = {
             e.onMouseUp = function(e) {
                 var newPosition = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
 
+                var iaTurn = false;
+
                 console.log('position : ', position)
                 console.log('nouvelle position : ', newPosition)
 
@@ -68,6 +70,8 @@ JDM.Piece.prototype = {
 
                                 JDM.Board.piecesToPlaceContainer.removeChild(shape);
                                 JDM.Piece.prototype.draw(newPosition, player);
+
+                                iaTurn = true;
                             }
                         }
                     }
@@ -94,21 +98,12 @@ JDM.Piece.prototype = {
                                          JDM.Board.positions[newPosition.tab][newPosition.num] = 1;
 
                                          JDM.Board.drawGame();
+
+                                         iaTurn = true;
                                      }
                                  }
                              }
                          }
-                    }
-
-                    // on check les moulins
-                    var mills = JDM.Ia.findMills(JDM.Board.positions);
-
-                    JDM.Ia.checkMills(mills, 1);
-
-                    console.log('delete', JDM.delete)
-
-                    if (JDM.delete == false) {
-                        JDM.turn = 2;
                     }
 
                     shape.x = 0;
@@ -116,7 +111,20 @@ JDM.Piece.prototype = {
 
                     JDM.update = true;
 
-                    JDM.Ia.iaPlay();
+                    if (iaTurn) {
+                        // on check les moulins
+                        var mills = JDM.Ia.findMills(JDM.Board.positions);
+
+                        JDM.Ia.checkMills(mills, 1);
+
+                        console.log('delete', JDM.delete)
+
+                        if (JDM.delete == false) {
+                            JDM.turn = 2;
+                        }
+
+                        JDM.Ia.iaPlay();
+                    }
                 }
             };
         };

@@ -184,7 +184,7 @@ JDM.Ia = {
 
     max: function(gameCopy, depth) {
         if (depth == 0) {
-            return this.evaluation(gameCopy);
+            return this.mapScore(gameCopy);
         }
 
         var max = -10000;
@@ -752,23 +752,6 @@ JDM.Ia = {
 			
 			return false;
 		}
-	},
-	
-	testFunction: function() {
-		var tab1 = [1,2,1,1,null,1,2,1,2];
-		var tab2 = [2,1,2,1,null,1,1,2,0];
-		var tab3 = [0,2,0,2,null,2,0,0,0];
-		var stateofthegame = JDM.Board.positions = [tab1, tab2, tab3];
-
-		JDM.Board.drawGame(stateofthegame);
-		var bestNextMove = this.bestNextMove(stateofthegame);
-
-        console.log(bestNextMove);
-
-        setTimeout(function() {
-            JDM.Board.drawGame(bestNextMove);
-
-        }, 3000);
-    }
+	}
 }
 
