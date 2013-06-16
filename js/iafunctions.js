@@ -76,6 +76,7 @@ JDM.Ia = {
     deletePieces: function() {
         console.log('IA delete')
         if (JDM.turn == 2 && JDM.delete) {
+            JDM.update = true;
             var gameCopy = JDM.Board.positions;
 
             this.maxDelete(gameCopy, 1);
@@ -84,12 +85,9 @@ JDM.Ia = {
 
             setTimeout(function() {
                 JDM.Board.drawGame();
+                JDM.turn = 1;
+                JDM.delete = false;
             }, 1000);
-
-            JDM.turn = 1;
-            JDM.delete = false;
-
-            console.log('step', JDM.step, 'turn', JDM.turn, 'delete', JDM.delete)
         }
     },
 

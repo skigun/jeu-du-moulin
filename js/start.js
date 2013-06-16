@@ -7,7 +7,7 @@ window.onload = function() {
     JDM.stage.snapToPixelEnabled = true;
 
     JDM.canvas.width = 600;
-    JDM.canvas.height = 600;
+    JDM.canvas.height = 650;
     JDM.canvas.getContext('2d');
 
     JDM.Menu.init();

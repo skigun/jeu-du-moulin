@@ -12,6 +12,7 @@ var JDM = {
     tick: function() {
         if (JDM.update) {
             JDM.update = false;
+            JDM.Menu.update();
             JDM.stage.update();
         }
     }
