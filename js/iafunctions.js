@@ -38,6 +38,7 @@ JDM.Ia = {
                 if (JDM.piecesToPlace == 0) {
                     JDM.step = 2;
                     JDM.turn = 1;
+                    JDM.Ia.checkRemainingPiece();
                     console.log('step', JDM.step, 'turn', JDM.turn, 'delete', JDM.deletePiece)
                 }
             });
@@ -769,27 +770,40 @@ JDM.Ia = {
 	},
 
     checkRemainingPiece: function() {
-        if (JDM.step == 2 || JDM.step == 3) {
+        if (JDM.step == 2) {
+            var humanMovablePieces = this.findAllPieces(JDM.Board.positions, 1);
+            var iaMovablePieces = this.findAllPieces(JDM.Board.positions, 2);
 
-            var HumanRemainingPieces = JDM.Ia.countPieces(JDM.Board.positions, 1);
-            var IAremainingPieces = JDM.Ia.countPieces(JDM.Board.positions, 2);
+            console.log('human:',humanMovablePieces);
+            console.log('human:',iaMovablePieces);
 
-            console.log('Human remaining piece:', HumanRemainingPieces.length)
-            console.log('IA remaining piece:', IAremainingPieces.length)
 
-            if (IAremainingPieces.length == 3) {
-                JDM.flying.ia = true;
+            var humanRemainingPieces = this.countPieces(JDM.Board.positions, 1);
+            var iaremainingPieces = this.countPieces(JDM.Board.positions, 2);
+
+            if (humanMovablePieces.length == 0) {
+                JDM.winner = 2;
+                JDM.step = 4;
             }
 
-            if (HumanRemainingPieces.length == 3) {
-                JDM.flying.human = true;
-            }
-
-            if (IAremainingPieces.length == 2) {
+            if (iaMovablePieces.length == 0) {
                 JDM.winner = 1;
                 JDM.step = 4;
             }
-            if (HumanRemainingPieces.length == 2) {
+
+            if (iaremainingPieces.length == 3) {
+                JDM.flying.ia = true;
+            }
+
+            if (humanRemainingPieces.length == 3) {
+                JDM.flying.human = true;
+            }
+
+            if (iaremainingPieces.length == 2) {
+                JDM.winner = 1;
+                JDM.step = 4;
+            }
+            if (humanRemainingPieces.length == 2) {
                 JDM.winner = 2;
                 JDM.step = 4;
             }
