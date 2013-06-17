@@ -3,32 +3,31 @@ JDM.Ia = {
         this.i = tableau;
         this.j = indice;
     },
-    
-	Mill: function (pion1, pion2, pion3, player) {
-		this.pion1 = pion1;
-		this.pion2 = pion2;
-		this.pion3 = pion3;
-		this.player = player;
-	},
-	
+
+    Mill: function (pion1, pion2, pion3, player) {
+        this.pion1 = pion1;
+        this.pion2 = pion2;
+        this.pion3 = pion3;
+        this.player = player;
+    },
+
     gameCopy: null,
     bestMove: [],
-	existingMills: [],
-	bestNextSotg: null,
+    existingMills: [],
+    bestNextSotg: null,
 
     iaPlay: function() {
-        console.log('IA play')
-        if (JDM.step == 1 && JDM.turn == 2 && !JDM.delete) {
-
-            console.log('IA place')
+        console.log('IA play');
+        if (JDM.step == 1 && JDM.turn == 2 && !JDM.deletePiece) {
+            console.log('IA place');
             this.placePieces(function() {
-                console.log('hey')
+                console.log('hey');
                 // on décremente le nombre de pieces à poser
                 var mills = JDM.Ia.findMills(JDM.Board.positions);
 
                 JDM.Ia.checkMills(mills, 2);
 
-                if (JDM.delete) {
+                if (JDM.deletePiece) {
                     JDM.Ia.deletePieces();
                 } else {
                     JDM.turn = 1;
@@ -37,25 +36,24 @@ JDM.Ia = {
 
                 JDM.piecesToPlace -= 1;
 
-                if(JDM.piecesToPlace == 0) {
+                if (JDM.piecesToPlace == 0) {
                     JDM.step = 2;
                     JDM.turn = 1;
-                    console.log('step', JDM.step, 'turn', JDM.turn, 'delete', JDM.delete)
+                    console.log('step', JDM.step, 'turn', JDM.turn, 'delete', JDM.deletePiece)
                 }
             });
         }
 
-        if (JDM.step == 2 && JDM.turn == 2 && !JDM.delete) {
+        if (JDM.step == 2 && JDM.turn == 2 && !JDM.deletePiece) {
 
-            console.log('IA move')
+            console.log('IA move');
 
             this.movePiece(function() {
-
                 var mills = JDM.Ia.findMills(JDM.Board.positions);
 
                 JDM.Ia.checkMills(mills, 2);
 
-                if (JDM.delete) {
+                if (JDM.deletePiece) {
                     JDM.Ia.deletePieces();
                 } else {
                     JDM.turn = 1;
@@ -74,19 +72,18 @@ JDM.Ia = {
     },
 
     deletePieces: function() {
-        console.log('IA delete')
-        if (JDM.turn == 2 && JDM.delete) {
+        console.log('IA delete');
+        if (JDM.turn == 2 && JDM.deletePiece) {
             JDM.update = true;
             var gameCopy = JDM.Board.positions;
 
             this.maxDelete(gameCopy, 1);
-
             JDM.Board.positions[this.bestMove.i][this.bestMove.j] = 0;
 
             setTimeout(function() {
                 JDM.Board.drawGame();
                 JDM.turn = 1;
-                JDM.delete = false;
+                JDM.deletePiece = false;
             }, 1000);
         }
     },
@@ -100,7 +97,6 @@ JDM.Ia = {
 
         // on déplace la pièce sur cette position
         var newPosition = JDM.Board.arrayTranslatePositionToPixel[this.bestMove.i][this.bestMove.j];
-
         var selectedPiece = JDM.Board.iaPieces.shift();
 
         // on met à zero le tableau
@@ -118,11 +114,9 @@ JDM.Ia = {
 
         // si le pion courrant ne fait pas parti d'un moulin, on peut l'effacer
         for (var k = 0, l = this.existingMills.length; k < l ; k++) {
-
             if (this.existingMills[k].player == player) {
                 // si le pion testé fait parti d'un moulin
                 if (this.pionEquals(this.existingMills[k].pion1, currentPiece) || this.pionEquals(this.existingMills[k].pion2, currentPiece) || this.pionEquals(this.existingMills[k].pion3, currentPiece)) {
-
                     return true;
                 }
             }
@@ -145,14 +139,12 @@ JDM.Ia = {
                     // si le pion courrant ne fait pas parti d'un moulin, on peut l'effacer
 
                     if (!this.isPieceInMills(currentPiece, 1)) {
-                       // console.log('current piece', currentPiece);
+                        // console.log('current piece', currentPiece);
 
                         gameCopy[i][j] = 0;
-
                         tmp = this.minDelete(gameCopy, depth - 1);
 
                         if (tmp > max) {
-
                             max = tmp;
                             this.bestMove = ({i: i, j: j, score: tmp});
                         }
@@ -193,11 +185,9 @@ JDM.Ia = {
                 if (gameCopy[i][j] == 0 && j != 4) {
 
                     gameCopy[i][j] = 2;
-
                     tmp = this.min(gameCopy, depth - 1);
 
                     if (tmp > max) {
-
                         max = tmp;
                         this.bestMove = ({i: i, j: j, score: tmp});
                     }
@@ -218,12 +208,11 @@ JDM.Ia = {
         var min = 10000;
         var tmp;
 
-        for (var i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++) {
             for (var j = 0; j < 9; j++) {
                 if (gameCopy[i][j] == 0 && j != 4) {
 
                     gameCopy[i][j] = 1;
-
                     tmp = this.max(gameCopy, depth - 1);
 
                     if (tmp < min) {
@@ -247,8 +236,7 @@ JDM.Ia = {
             if (gameCopy[i][0] == 2 && gameCopy[i][1] == 2 && gameCopy[i][2] == 2) {
                 // console.log("moulin horizontal haut")
                 score += 20;
-            }
-            else if (gameCopy[i][0] == 1 && gameCopy[i][1] == 1 && gameCopy[i][2] == 1) {
+            } else if (gameCopy[i][0] == 1 && gameCopy[i][1] == 1 && gameCopy[i][2] == 1) {
                 score -= 20;
             }
 
@@ -256,8 +244,7 @@ JDM.Ia = {
             if (gameCopy[i][6] == 2 && gameCopy[i][7] == 2 && gameCopy[i][8] == 2) {
                 // console.log("moulin horizontal bas")
                 score += 20;
-            }
-            else if (gameCopy[i][6] == 1 && gameCopy[i][7] == 1 && gameCopy[i][8] == 1) {
+            } else if (gameCopy[i][6] == 1 && gameCopy[i][7] == 1 && gameCopy[i][8] == 1) {
                 score -= 20;
             }
 
@@ -265,8 +252,7 @@ JDM.Ia = {
             if (gameCopy[i][0] == 2 && gameCopy[i][3] == 2 && gameCopy[i][6] == 2) {
                 // console.log("moulin vertical gauche")
                 score += 20;
-            }
-            else if (gameCopy[i][0] == 1 && gameCopy[i][3] == 1 && gameCopy[i][6] == 1) {
+            } else if (gameCopy[i][0] == 1 && gameCopy[i][3] == 1 && gameCopy[i][6] == 1) {
                 score -= 20;
             }
 
@@ -274,41 +260,40 @@ JDM.Ia = {
             if (gameCopy[i][2] == 2 && gameCopy[i][5] == 2 && gameCopy[i][8] == 2) {
                 // console.log("moulin vertical droite")
                 score += 20;
-            }
-            else if (gameCopy[i][2] == 1 && gameCopy[i][5] == 1 && gameCopy[i][8] == 1) {
+            } else if (gameCopy[i][2] == 1 && gameCopy[i][5] == 1 && gameCopy[i][8] == 1) {
                 score -= 20;
             }
         }
 
         // Moulin vertical haut
-        if (gameCopy[0][1] == 2 && gameCopy[1][1] == 2 && gameCopy[2][1] == 2){
+        if (gameCopy[0][1] == 2 && gameCopy[1][1] == 2 && gameCopy[2][1] == 2) {
             // console.log('moulin vertical haut')
             score += 20;
-        } else if (gameCopy[0][1] == 1 && gameCopy[1][1] == 1 && gameCopy[2][1] == 1){
+        } else if (gameCopy[0][1] == 1 && gameCopy[1][1] == 1 && gameCopy[2][1] == 1) {
             score -= 20;
         }
 
          // Moulin vertical bas
-        if (gameCopy[0][7] == 2 && gameCopy[1][7] == 2 && gameCopy[2][7] == 2){
+        if (gameCopy[0][7] == 2 && gameCopy[1][7] == 2 && gameCopy[2][7] == 2) {
             // console.log('moulin vertical bas')
             score += 20;
-        } else if (gameCopy[0][7] == 1 && gameCopy[1][7] == 1 && gameCopy[2][7] == 1){
+        } else if (gameCopy[0][7] == 1 && gameCopy[1][7] == 1 && gameCopy[2][7] == 1) {
             score -= 20;
         }
 
         // Moulin horizontal gauche
-        if (gameCopy[0][3] == 2 && gameCopy[1][3] == 2 && gameCopy[2][3] == 2){
+        if (gameCopy[0][3] == 2 && gameCopy[1][3] == 2 && gameCopy[2][3] == 2) {
             // console.log('moulin horizontal gauche')
             score += 20;
-        } else if (gameCopy[0][3] == 1 && gameCopy[1][3] == 1 && gameCopy[2][3] == 1){
+        } else if (gameCopy[0][3] == 1 && gameCopy[1][3] == 1 && gameCopy[2][3] == 1) {
             score -= 20;
         }
 
         // Moulin horizontal droite
-        if (gameCopy[0][5] == 2 && gameCopy[1][5] == 2 && gameCopy[2][5] == 2){
+        if (gameCopy[0][5] == 2 && gameCopy[1][5] == 2 && gameCopy[2][5] == 2) {
             // console.log('moulin horizontal droite')
             score += 20;
-        } else  if (gameCopy[0][5] == 1 && gameCopy[1][5] == 1 && gameCopy[2][5] == 1){
+        } else if (gameCopy[0][5] == 1 && gameCopy[1][5] == 1 && gameCopy[2][5] == 1) {
             score -= 20;
         }
 
@@ -341,11 +326,11 @@ JDM.Ia = {
     findAllPieces: function (stateofthegame, color) {
         //var colorToSearch = color;
         var piecesPositionArray = [];
-        for (var i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++) {
             for (var j = 0; j < 9; j++) {
                 if (stateofthegame[i][j] == color) {
                     //check si la piece en question peut bouger ou pas, et si elle peut bouger, sur quelles positions
-                    myPion = new this.Pion(i, j);
+                    var myPion = new this.Pion(i, j);
                     var pionPossiblePos = this.canMove(stateofthegame, myPion);
                     if (pionPossiblePos.length != 0) {
                         var pieceAvailableToMove = [myPion , pionPossiblePos];
@@ -390,8 +375,7 @@ JDM.Ia = {
                     positionsAvailable.push(currentPos);
                 }
             }
-        }
-        else {
+        } else {
             if (pion.j == 1 || pion.j == 7) {
                 if (stateofthegame[pion.i][pion.j + 1] == 0) {
                     currentPos = new this.Pion(pion.i, pion.j + 1);
@@ -401,8 +385,7 @@ JDM.Ia = {
                     currentPos = new this.Pion(pion.i, pion.j - 1);
                     positionsAvailable.push(currentPos);
                 }
-            }
-            else if (pion.j == 3 || pion.j == 5) {
+            } else if (pion.j == 3 || pion.j == 5) {
                 if (stateofthegame[pion.i][pion.j + 3] == 0) {
                     currentPos = new this.Pion(pion.i, pion.j + 3);
                     positionsAvailable.push(currentPos);
@@ -418,8 +401,7 @@ JDM.Ia = {
                     currentPos = new this.Pion(1, pion.j);
                     positionsAvailable.push(currentPos);
                 }
-            }
-            else if (pion.i == 1) {
+            } else if (pion.i == 1) {
                 if (stateofthegame[0][pion.j] == 0) {
                     currentPos = new this.Pion(0, pion.j);
                     positionsAvailable.push(currentPos);
@@ -442,82 +424,75 @@ JDM.Ia = {
             // moulin horizontal haut
             if (stateofthegame[i][0] == 2 && stateofthegame[i][1] == 2 && stateofthegame[i][2] == 2) {
 				mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 1), new this.Pion(i, 2), 2);
-				mills.push(mill)
-            }
-            else if (stateofthegame[i][0] == 1 && stateofthegame[i][1] == 1 && stateofthegame[i][2] == 1) {
+				mills.push(mill);
+            } else if (stateofthegame[i][0] == 1 && stateofthegame[i][1] == 1 && stateofthegame[i][2] == 1) {
                 mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 1), new this.Pion(i, 2), 1);
-				mills.push(mill)
+				mills.push(mill);
             }
 
             // moulin horizontal bas
             if (stateofthegame[i][6] == 2 && stateofthegame[i][7] == 2 && stateofthegame[i][8] == 2) {
                 mill = new this.Mill(new this.Pion(i, 6), new this.Pion(i, 7), new this.Pion(i, 8), 2);
-				mills.push(mill)
-            }
-            else if (stateofthegame[i][6] == 1 && stateofthegame[i][7] == 1 && stateofthegame[i][8] == 1) {
+				mills.push(mill);
+            } else if (stateofthegame[i][6] == 1 && stateofthegame[i][7] == 1 && stateofthegame[i][8] == 1) {
                 mill = new this.Mill(new this.Pion(i, 6), new this.Pion(i, 7), new this.Pion(i, 8), 1);
-				mills.push(mill)
+				mills.push(mill);
             }
 
             // moulin vertical gauche
             if (stateofthegame[i][0] == 2 && stateofthegame[i][3] == 2 && stateofthegame[i][6] == 2) {
                 mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 3), new this.Pion(i, 6), 2);
-				mills.push(mill)
-            }
-            else if (stateofthegame[i][0] == 1 && stateofthegame[i][3] == 1 && stateofthegame[i][6] == 1) {
+				mills.push(mill);
+            } else if (stateofthegame[i][0] == 1 && stateofthegame[i][3] == 1 && stateofthegame[i][6] == 1) {
                 mill = new this.Mill(new this.Pion(i, 0), new this.Pion(i, 3), new this.Pion(i, 6), 1);
-				mills.push(mill)
+				mills.push(mill);
             }
 
             // moulin vertical droite
             if (stateofthegame[i][2] == 2 && stateofthegame[i][5] == 2 && stateofthegame[i][8] == 2) {
                 mill = new this.Mill(new this.Pion(i, 2), new this.Pion(i, 5), new this.Pion(i, 8), 2);
-				mills.push(mill)
-            }
-            else if (stateofthegame[i][2] == 1 && stateofthegame[i][5] == 1 && stateofthegame[i][8] == 1) {
+				mills.push(mill);
+            } else if (stateofthegame[i][2] == 1 && stateofthegame[i][5] == 1 && stateofthegame[i][8] == 1) {
                 mill = new this.Mill(new this.Pion(i, 2), new this.Pion(i, 5), new this.Pion(i, 8), 1);
-				mills.push(mill)
+				mills.push(mill);
             }
         }
 
         // Moulin vertical haut
-        if (stateofthegame[0][1] == 2 && stateofthegame[1][1] == 2 && stateofthegame[2][1] == 2){
+        if (stateofthegame[0][1] == 2 && stateofthegame[1][1] == 2 && stateofthegame[2][1] == 2) {
             mill = new this.Mill(new this.Pion(0, 1), new this.Pion(1, 1), new this.Pion(2, 1), 2);
 			mills.push(mill)
-        } 
-		else if (stateofthegame[0][1] == 1 && stateofthegame[1][1] == 1 && stateofthegame[2][1] == 1){
+        } else if (stateofthegame[0][1] == 1 && stateofthegame[1][1] == 1 && stateofthegame[2][1] == 1) {
             mill = new this.Mill(new this.Pion(0, 1), new this.Pion(1, 1), new this.Pion(2, 1), 1);
-			mills.push(mill)
+			mills.push(mill);
         }
 
          // Moulin vertical bas
-        if (stateofthegame[0][7] == 2 && stateofthegame[1][7] == 2 && stateofthegame[2][7] == 2){
+        if (stateofthegame[0][7] == 2 && stateofthegame[1][7] == 2 && stateofthegame[2][7] == 2) {
             mill = new this.Mill(new this.Pion(0, 7), new this.Pion(1, 7), new this.Pion(2, 7), 2);
-			mills.push(mill)
+			mills.push(mill);
         } 
-		else if (stateofthegame[0][7] == 1 && stateofthegame[1][7] == 1 && stateofthegame[2][7] == 1){
+		else if (stateofthegame[0][7] == 1 && stateofthegame[1][7] == 1 && stateofthegame[2][7] == 1) {
 			mill = new this.Mill(new this.Pion(0, 7), new this.Pion(1, 7), new this.Pion(2, 7), 1);
-			mills.push(mill)
+			mills.push(mill);
         }
 
         // Moulin horizontal gauche
-        if (stateofthegame[0][3] == 2 && stateofthegame[1][3] == 2 && stateofthegame[2][3] == 2){
+        if (stateofthegame[0][3] == 2 && stateofthegame[1][3] == 2 && stateofthegame[2][3] == 2) {
             mill = new this.Mill(new this.Pion(0, 3), new this.Pion(1, 3), new this.Pion(2, 3), 2);
-			mills.push(mill)
-        } 
-		else if (stateofthegame[0][3] == 1 && stateofthegame[1][3] == 1 && stateofthegame[2][3] == 1){
+			mills.push(mill);
+        } else if (stateofthegame[0][3] == 1 && stateofthegame[1][3] == 1 && stateofthegame[2][3] == 1) {
             mill = new this.Mill(new this.Pion(0, 3), new this.Pion(1, 3), new this.Pion(2, 3), 1);
-			mills.push(mill)
+			mills.push(mill);
         }
 
         // Moulin horizontal droite
-        if (stateofthegame[0][5] == 2 && stateofthegame[1][5] == 2 && stateofthegame[2][5] == 2){
+        if (stateofthegame[0][5] == 2 && stateofthegame[1][5] == 2 && stateofthegame[2][5] == 2) {
             mill = new this.Mill(new this.Pion(0, 5), new this.Pion(1, 5), new this.Pion(2, 5), 2);
-			mills.push(mill)
-        } 
-		else if (stateofthegame[0][5] == 1 && stateofthegame[1][5] == 1 && stateofthegame[2][5] == 1){
+			mills.push(mill);
+        } else if (stateofthegame[0][5] == 1 && stateofthegame[1][5] == 1 && stateofthegame[2][5] == 1) {
             mill = new this.Mill(new this.Pion(0, 5), new this.Pion(1, 5), new this.Pion(2, 5), 1);
-			mills.push(mill)
+			mills.push(mill);
         }
 		
 		return mills;
@@ -538,10 +513,10 @@ JDM.Ia = {
     checkMills: function(mills, player) {
         // on check les moulins
         for (var i = 0, l = mills.length; i < l ; i++) {
-            if(!this.isExistingMill(mills[i])) {
+            if (!this.isExistingMill(mills[i])) {
                 if (mills[i].player == player) {
                     // on met la phase du jeu => delete
-                    JDM.delete = true;
+                    JDM.deletePiece = true;
                 }
             }
         }
@@ -553,9 +528,8 @@ JDM.Ia = {
 		if (pion1.i == pion2.i && pion1.j == pion2.j) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	},
 
 	bestNextMove: function (stateofthegame) {
@@ -593,7 +567,7 @@ JDM.Ia = {
 
         var min = 10000;
         var tmp;
-		var possibleSotg = this.nextMoves(stateofthegame, 1)
+		var possibleSotg = this.nextMoves(stateofthegame, 1);
 
 		for (var i = 0, l = possibleSotg.length; i < l; i++) {
 			tmp = this.maxPhase2(possibleSotg[i], depth - 1);
@@ -614,8 +588,7 @@ JDM.Ia = {
 		for (var i = 0, l = mills.length; i < l; i++) {
 			if (mills[i].player == 1) {
 				numberOfHumanMills += 1;
-			}
-			else if (mills[i].player == 2) {
+			} else if (mills[i].player == 2) {
 				numberOfIaMills += 1;
 			}
 		}
@@ -667,10 +640,10 @@ JDM.Ia = {
 	
 	countPieces: function (stateofthegame, color) {
         var piecesArray = [];
-        for (var i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++) {
             for (var j = 0; j < 9; j++) {
                 if (stateofthegame[i][j] == color) {
-                    myPion = new this.Pion(i, j);
+                    var myPion = new this.Pion(i, j);
                     piecesArray.push(myPion);
                 }
             }
@@ -686,70 +659,52 @@ JDM.Ia = {
 					if (pion2.j == 1 || pion2.j == 3) {
 						return true;
 					}
-				}
-				else if (pion1.j == 2) {
+				} else if (pion1.j == 2) {
 					if (pion2.j == 1 || pion2.j == 5) {
 						return true;
 					}
-				}
-				else if (pion1.j == 6) {
+				} else if (pion1.j == 6) {
 					if (pion2.j == 3 || pion2.j == 7) {
 						return true;
 					}
-				}
-				else if (pion1.j == 8) {
+                } else if (pion1.j == 8) {
 					if (pion2.j == 5 || pion2.j == 7) {
 						return true;
 					}
 				}
-				
+
 				return false;
 			}
 			
 			return false;
-		}
-		else {
+		} else {
 			if (pion1.i == pion2.i) {
 				if (pion1.j == 1) {
 					if (pion2.j == 0 || pion2.j == 2) {
 						return true;
 					}
-				}
-				else if (pion1.j == 3) {
+				} else if (pion1.j == 3) {
 					if (pion2.j == 0 || pion2.j == 6) {
 						return true;
 					}
-				}
-				else if (pion1.j == 5) {
+				} else if (pion1.j == 5) {
 					if (pion2.j == 2 || pion2.j == 8) {
 						return true;
 					}
-				}
-				else if (pion1.j == 7) {
+				} else if (pion1.j == 7) {
 					if (pion2.j == 6 || pion2.j == 8) {
 						return true;
 					}
 				}
 				
 				return false;
-			}
-			else if (pion1.i == 0 || pion1.i == 2) {
-				if (pion2.i == 1 && pion1.j == pion2.j) {
-					return true;
-				}
-				
-				return false;
-			}
-			else if (pion1.i == 1) {
-				if ((pion2.i == 0 || pion2.i == 2) && pion1.j == pion2.j) {
-					return true;
-				}
-				
-				return false;
+			} else if (pion1.i == 0 || pion1.i == 2) {
+				return pion2.i == 1 && pion1.j == pion2.j;
+			} else if (pion1.i == 1) {
+				return (pion2.i == 0 || pion2.i == 2) && pion1.j == pion2.j;
 			}
 			
 			return false;
 		}
 	}
-}
-
+};

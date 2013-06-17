@@ -7,7 +7,7 @@ var JDM = {
     piecesToPlace: 9,
     update: false,
     turn: 1,
-    delete: false,
+    deletePiece: false,
 
     tick: function() {
         if (JDM.update) {

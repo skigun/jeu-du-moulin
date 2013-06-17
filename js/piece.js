@@ -24,10 +24,8 @@ JDM.Piece.prototype = {
         }
 
         if (JDM.step == 0) {
-		    JDM.Board.piecesToPlaceContainer.addChild(shape);
-        }
-        else
-        {
+            JDM.Board.piecesToPlaceContainer.addChild(shape);
+        } else {
             JDM.Board.piecesContainer.addChild(shape);
         }
 
@@ -56,10 +54,10 @@ JDM.Piece.prototype = {
 
                 var iaTurn = false;
 
-                console.log('position : ', position)
-                console.log('nouvelle position : ', newPosition)
+                console.log('position : ', position);
+                console.log('nouvelle position : ', newPosition);
 
-                if (JDM.turn == 1  && !JDM.delete) {
+                if (JDM.turn == 1  && !JDM.deletePiece) {
                     // placing pieces
                     if (JDM.step == 1) {
                         if (newPosition && position.tab == null && position.num == null) {
@@ -77,49 +75,35 @@ JDM.Piece.prototype = {
                     }
 
                     // moving pieces
-                    if (JDM.step == 2) {
-                         // si on bouge le pion de sa position actuelle on met à 0 l'emplacement
-                         if (position.tab != null && position.num != null) {
+                    if (JDM.step == 2 && position.tab != null && position.num != null) {
+                        var pionPossiblePos = JDM.Ia.canMove(JDM.Board.positions, new JDM.Ia.Pion(position.tab, position.num));
+                        console.log('possiblePos', pionPossiblePos);
 
-                             var pionPossiblePos = JDM.Ia.canMove(JDM.Board.positions, new JDM.Ia.Pion(position.tab, position.num));
+                        if (pionPossiblePos.length != 0) {
+                            var newPion = new JDM.Ia.Pion(newPosition.tab, newPosition.num);
+                            for (var i = 0, l = pionPossiblePos.length; i < l; i++) {
+                                if (JDM.Ia.pionEquals(pionPossiblePos[i], newPion)) {
+                                    JDM.Board.positions[position.tab][position.num] = 0;
+                                    JDM.Board.positions[newPosition.tab][newPosition.num] = 1;
+                                    JDM.Board.drawGame();
 
-                             console.log('possiblePos', pionPossiblePos)
-
-                             if (pionPossiblePos.length != 0) {
-
-                                 var newPion = new JDM.Ia.Pion(newPosition.tab, newPosition.num);
-
-                                 for (var i = 0, l = pionPossiblePos.length; i < l ; i++) {
-
-                                     if (JDM.Ia.pionEquals(pionPossiblePos[i], newPion)) {
-
-                                         JDM.Board.positions[position.tab][position.num] = 0;
-
-                                         JDM.Board.positions[newPosition.tab][newPosition.num] = 1;
-
-                                         JDM.Board.drawGame();
-
-                                         iaTurn = true;
-                                     }
-                                 }
-                             }
-                         }
+                                    iaTurn = true;
+                                }
+                            }
+                        }
                     }
 
                     shape.x = 0;
                     shape.y = 0;
-
                     JDM.update = true;
 
                     if (iaTurn) {
                         // on check les moulins
                         var mills = JDM.Ia.findMills(JDM.Board.positions);
-
                         JDM.Ia.checkMills(mills, 1);
+                        console.log('delete', JDM.deletePiece);
 
-                        console.log('delete', JDM.delete)
-
-                        if (JDM.delete == false) {
+                        if (JDM.deletePiece == false) {
                             JDM.turn = 2;
                         }
 
@@ -133,27 +117,27 @@ JDM.Piece.prototype = {
     setIaEvent: function(shape, player, position) {
 
         shape.onClick = function(e) {
-            console.log(position.tab, position.num)
+            console.log(position.tab, position.num);
             // si c'est le tour du joueur 1, et qu'il est en phase de delete, il peut effacer la piece IA
-            if (JDM.turn == 1 && JDM.delete) {
+            if (JDM.turn == 1 && JDM.deletePiece) {
                 console.log('player 1 deleting piece');
 
                 var newPosition = JDM.Board.checkAndAdjustPosition({x : e.stageX, y: e.stageY});
                 var currentPiece = new JDM.Ia.Pion(newPosition.tab, newPosition.num);
 
-                console.log('this piece cannot be deleted', JDM.Ia.isPieceInMills(currentPiece, 2))
+                console.log('this piece cannot be deleted', JDM.Ia.isPieceInMills(currentPiece, 2));
 
                 if (!JDM.Ia.isPieceInMills(currentPiece, 2)) {
 
                     JDM.Board.positions[newPosition.tab][newPosition.num] = 0;
                     JDM.Board.drawGame();
 
-                    JDM.delete = false;
+                    JDM.deletePiece = false;
                     JDM.turn = 2;
 
                     JDM.Ia.iaPlay();
                 }
             }
-        }
+        };
     }
 };
