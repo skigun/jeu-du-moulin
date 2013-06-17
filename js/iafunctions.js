@@ -14,6 +14,7 @@ JDM.Ia = {
     gameCopy: null,
     bestMove: [],
     existingMills: [],
+	bestNextMoves : [],
     bestNextSotg: null,
 
     iaPlay: function() {
@@ -581,13 +582,31 @@ JDM.Ia = {
 
 	bestNextMove: function (stateofthegame) {
 
+		this.bestNextSotg = null;
+		this.bestNextMoves = [];
         if (!JDM.flying.ia) {
 		    this.maxPhase2(stateofthegame, 4);
         } else {
             this.maxFly(stateofthegame, 4);
         }
 
-		return this.bestNextSotg;
+			var maxScoreMoves = [];
+            var maxScore = 0;
+			for (var i = 0, l = this.bestNextMoves.length; i < l; i++) {
+				if (i == 0) {
+					maxScore = this.bestNextMoves[i][1];
+				}
+				else {
+					if (this.bestNextMoves[i][1] >= maxScore) {
+						maxScoreMoves.push(this.bestNextMoves[i][0]);
+					}
+				}
+			}
+			if (this.bestNextMoves[0][1] >= maxScore) {
+				maxScoreMoves.push(this.bestNextMoves[0][0]);
+			}
+			this.bestNextSotg = maxScoreMoves[Math.floor(Math.random()*maxScoreMoves.length)];
+			return this.bestNextSotg;
 	},
 
 	maxPhase2: function (stateofthegame, depth) {
@@ -601,10 +620,12 @@ JDM.Ia = {
 
 		for (var i = 0, l = possibleSotg.length; i < l; i++) {
 			tmp = this.minPhase2(possibleSotg[i], depth - 1);
-			if (tmp > max) {
+			if (tmp >= max) {
 				max = tmp;
                 if (depth == 4) {
-				    this.bestNextSotg = possibleSotg[i];
+				    var tmpArray = [possibleSotg[i], tmp];
+                    this.bestNextMoves.push(tmpArray);
+					//this.bestNextSotg = possibleSotg[i];
                 }
 			}
 		}
@@ -617,7 +638,7 @@ JDM.Ia = {
             return this.mapScore(stateofthegame);
         }
 
-        var min = 10000;
+        var min = 100000;
         var tmp;
 		var possibleSotg = this.nextMoves(stateofthegame, 1);
 
@@ -636,16 +657,18 @@ JDM.Ia = {
             return this.mapScore(stateofthegame);
         }
 
-        var max = -10000;
+        var max = -100000;
         var tmp;
         var possibleSotg = this.nextMovesPhase3(JDM.Board.positions, 2);
 
         for (var i = 0, l = possibleSotg.length; i < l; i++) {
             tmp = this.minPhase2(possibleSotg[i], depth - 1);
-            if (tmp > max) {
+            if (tmp >= max) {
                 max = tmp;
                 if (depth == 4) {
-                    this.bestNextSotg = possibleSotg[i];
+                    var tmpArray = [possibleSotg[i], tmp];
+                    this.bestNextMoves.push(tmpArray);
+					//this.bestNextSotg = possibleSotg[i];
                 }
             }
         }
@@ -721,12 +744,12 @@ JDM.Ia = {
 			}
 		}
 		
-		score += (numberOfIaMills * 50);
-		score -= (numberOfHumanMills * 50);
-		score -= (iaFixedPieces * 15);
-		score += (humanFixedPieces * 15);
-		score += (iaAdjPieces * 8);
-		score -= (humanAdjPieces * 8);
+		score += (numberOfIaMills * 115);
+		score -= (numberOfHumanMills * 100);
+		score -= (iaFixedPieces * 5);
+		score += (humanFixedPieces * 5);
+		score += (iaAdjPieces * 1);
+		score -= (humanAdjPieces * 1);
 		
 		return score;
 	},
