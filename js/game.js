@@ -8,6 +8,11 @@ var JDM = {
     update: false,
     turn: 1,
     deletePiece: false,
+    winner: 0,
+    flying: {
+        human: false,
+        ia: false
+    },
 
     tick: function() {
         if (JDM.update) {

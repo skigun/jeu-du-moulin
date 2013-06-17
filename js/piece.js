@@ -74,8 +74,15 @@ JDM.Piece.prototype = {
                         }
                     }
 
-                    // moving pieces
-                    if (JDM.step == 2 && position.tab != null && position.num != null) {
+                    if (JDM.flying.human) {
+                        //phase3
+                        if (JDM.Board.positions[newPosition.tab][newPosition.num] == 0) {
+                            JDM.Board.positions[position.tab][position.num] = 0;
+                            JDM.Board.positions[newPosition.tab][newPosition.num] = player;
+                            JDM.Board.drawGame();
+                            iaTurn = true;
+                        }
+                    } else if (JDM.step == 2 && position.tab != null && position.num != null) {
                         var pionPossiblePos = JDM.Ia.canMove(JDM.Board.positions, new JDM.Ia.Pion(position.tab, position.num));
                         console.log('possiblePos', pionPossiblePos);
 
@@ -107,6 +114,7 @@ JDM.Piece.prototype = {
                             JDM.turn = 2;
                         }
 
+                        JDM.Ia.checkRemainingPiece();
                         JDM.Ia.iaPlay();
                     }
                 }
@@ -135,6 +143,7 @@ JDM.Piece.prototype = {
                     JDM.deletePiece = false;
                     JDM.turn = 2;
 
+                    JDM.Ia.checkRemainingPiece();
                     JDM.Ia.iaPlay();
                 }
             }

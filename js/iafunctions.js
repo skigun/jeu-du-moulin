@@ -21,7 +21,6 @@ JDM.Ia = {
         if (JDM.step == 1 && JDM.turn == 2 && !JDM.deletePiece) {
             console.log('IA place');
             this.placePieces(function() {
-                console.log('hey');
                 // on décremente le nombre de pieces à poser
                 var mills = JDM.Ia.findMills(JDM.Board.positions);
 
@@ -31,7 +30,6 @@ JDM.Ia = {
                     JDM.Ia.deletePieces();
                 } else {
                     JDM.turn = 1;
-                    console.log('turn', JDM.turn)
                 }
 
                 JDM.piecesToPlace -= 1;
@@ -45,13 +43,13 @@ JDM.Ia = {
         }
 
         if (JDM.step == 2 && JDM.turn == 2 && !JDM.deletePiece) {
-
             console.log('IA move');
-
             this.movePiece(function() {
                 var mills = JDM.Ia.findMills(JDM.Board.positions);
 
                 JDM.Ia.checkMills(mills, 2);
+
+                JDM.Ia.checkRemainingPiece();
 
                 if (JDM.deletePiece) {
                     JDM.Ia.deletePieces();
@@ -79,6 +77,8 @@ JDM.Ia = {
 
             this.maxDelete(gameCopy, 1);
             JDM.Board.positions[this.bestMove.i][this.bestMove.j] = 0;
+
+            JDM.Ia.checkRemainingPiece();
 
             setTimeout(function() {
                 JDM.Board.drawGame();
@@ -109,6 +109,53 @@ JDM.Ia = {
             callback();
         }, 1000);
     },
+
+    nextMovesPhase3: function(stateofthegame, nextplayer) {
+        var newBoards = [];
+        var piecesPositionArray = this.findAllPiecesPhase3(stateofthegame, nextplayer);
+        for (var i = 0, l = piecesPositionArray.length; i < l; i++) {
+            //recopier l'etat de jeu actuel, et effectuer les changements
+            var posIpion = piecesPositionArray[i][0].i;
+            var posJpion = piecesPositionArray[i][0].j;
+
+            for (var j = 0, k = piecesPositionArray[i][1].length; j < k; j++) {
+                var newIPos =  piecesPositionArray[i][1][j].i;
+                var newJPos = piecesPositionArray[i][1][j].j;
+                var newSofg = [];
+                newSofg = JSON.parse(JSON.stringify(stateofthegame));
+                newSofg[posIpion][posJpion] = 0;
+                newSofg[newIPos][newJPos] = nextplayer;
+                //console.log(posIpion + ' ' + posJpion + ' = 0');
+                //console.log(newIPos + ' ' + newJPos + ' = ' + nextplayer);
+                newBoards.push(newSofg);
+            }
+        }
+        return newBoards;
+    },
+
+    findAllPiecesPhase3: function(stateofthegame, color) {
+        var piecesPositionArray = [];
+        var openPositions = [];
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 9; j++) {
+                if (stateofthegame[i][j] == 0) {
+                    var openPion = new this.Pion(i, j);
+                    openPositions.push(openPion);
+                }
+            }
+        }
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 9; j++) {
+                if (stateofthegame[i][j] == color) {
+                    var myPion = new this.Pion(i, j);
+                    var pieceAvailableToMove = [myPion , openPositions];
+                    piecesPositionArray.push(pieceAvailableToMove);
+                }
+            }
+        }
+        return piecesPositionArray;
+    },
+
 
     isPieceInMills: function(currentPiece, player) {
 
@@ -533,11 +580,16 @@ JDM.Ia = {
 	},
 
 	bestNextMove: function (stateofthegame) {
-		this.maxPhase2(stateofthegame, 4);
+
+        if (!JDM.flying.ia) {
+		    this.maxPhase2(stateofthegame, 4);
+        } else {
+            this.maxFly(stateofthegame, 4);
+        }
 
 		return this.bestNextSotg;
 	},
-	
+
 	maxPhase2: function (stateofthegame, depth) {
 		if (depth == 0) {
             return this.mapScore(stateofthegame);
@@ -578,6 +630,47 @@ JDM.Ia = {
 	
         return min;
 	},
+
+    maxFly: function (stateofthegame, depth) {
+        if (depth == 0) {
+            return this.mapScore(stateofthegame);
+        }
+
+        var max = -10000;
+        var tmp;
+        var possibleSotg = this.nextMovesPhase3(JDM.Board.positions, 2);
+
+        for (var i = 0, l = possibleSotg.length; i < l; i++) {
+            tmp = this.minPhase2(possibleSotg[i], depth - 1);
+            if (tmp > max) {
+                max = tmp;
+                if (depth == 4) {
+                    this.bestNextSotg = possibleSotg[i];
+                }
+            }
+        }
+
+        return max;
+    },
+
+    minFly: function (stateofthegame, depth) {
+        if (depth == 0) {
+            return this.mapScore(stateofthegame);
+        }
+
+        var min = 10000;
+        var tmp;
+        var possibleSotg = this.nextMovesPhase3(JDM.Board.positions, 2);
+
+        for (var i = 0, l = possibleSotg.length; i < l; i++) {
+            tmp = this.maxPhase2(possibleSotg[i], depth - 1);
+            if (tmp < min) {
+                min = tmp;
+            }
+        }
+
+        return min;
+    },
 	
 	mapScore: function (stateofthegame) {
 		var mills = this.findMills(stateofthegame);
@@ -651,6 +744,36 @@ JDM.Ia = {
 	
 		return piecesArray;	
 	},
+
+    checkRemainingPiece: function() {
+        if (JDM.step == 2 || JDM.step == 3) {
+
+            var HumanRemainingPieces = JDM.Ia.countPieces(JDM.Board.positions, 1);
+            var IAremainingPieces = JDM.Ia.countPieces(JDM.Board.positions, 2);
+
+            console.log('Human remaining piece:', HumanRemainingPieces.length)
+            console.log('IA remaining piece:', IAremainingPieces.length)
+
+            if (IAremainingPieces.length == 3) {
+                JDM.flying.ia = true;
+            }
+
+            if (HumanRemainingPieces.length == 3) {
+                JDM.flying.human = true;
+            }
+
+            if (IAremainingPieces.length == 2) {
+                JDM.winner = 1;
+                JDM.step = 4;
+            }
+            if (HumanRemainingPieces.length == 2) {
+                JDM.winner = 2;
+                JDM.step = 4;
+            }
+
+            JDM.update = true;
+        }
+    },
 	
 	pieceNextTo: function (pion1, pion2) {
 		if (pion1.j % 2 == 0) {
